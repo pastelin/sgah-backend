@@ -51,7 +51,6 @@ public class Gasto implements Serializable {
 		this.fechaCreacion = LocalDate.now();
 		this.cdEstatus = 1;
 		this.cdTipoMovimiento = 1;
-		this.cdGastoRecurrente = 0;
 	}
 
 	public Long getId() {

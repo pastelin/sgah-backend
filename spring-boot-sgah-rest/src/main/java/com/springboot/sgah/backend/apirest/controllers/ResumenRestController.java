@@ -21,7 +21,7 @@ import com.springboot.sgah.backend.apirest.services.GastoService;
 import com.springboot.sgah.backend.apirest.services.InversionService;
 import com.springboot.sgah.backend.apirest.services.PrestamoService;
 
-@CrossOrigin(origins = { "http://127.0.0.1:5173/" })
+@CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController
 @RequestMapping("/resumen/v0/resumen")
 public class ResumenRestController {

@@ -28,7 +28,7 @@ import com.springboot.sgah.backend.apirest.entities.Ahorro;
 import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
 
-@CrossOrigin(origins = { "http://127.0.0.1:5173/" })
+@CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController
 @RequestMapping("/ahorro/v0/ahorro")
 public class AhorroRestController {
@@ -36,7 +36,7 @@ public class AhorroRestController {
 	@Autowired
 	AhorroService ahorroService;
 
-	@GetMapping("/detalle")
+	@GetMapping("/detalle1")
 	public ResponseEntity<?> findAhorroByCurrentMonth() {
 
 		Map<String, Object> response = new HashMap<>();
@@ -59,7 +59,7 @@ public class AhorroRestController {
 
 	}
 
-	@GetMapping("/ahorros")
+	@GetMapping("/detalle")
 	public ResponseEntity<?> findAllAhorro() {
 
 		Map<String, Object> response = new HashMap<>();

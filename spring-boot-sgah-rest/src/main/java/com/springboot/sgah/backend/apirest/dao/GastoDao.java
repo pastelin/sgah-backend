@@ -10,7 +10,7 @@ import com.springboot.sgah.backend.apirest.entities.Gasto;
 
 public interface GastoDao extends CrudRepository<Gasto, Long> {
 
-	@Query(value = "select * from gastos where cd_estatus = 1 and month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)
+	@Query(value = "select * from gastos where cd_estatus = 1", nativeQuery = true)
 	List<Gasto> findGastoByCurrentMonth(int month, int year);
 
 	@Query(value = "select * from gastos where cd_gasto_recurrente = ?1", nativeQuery = true)

@@ -89,9 +89,19 @@ public class GastoServiceImpl implements GastoService {
 
 		gastos.stream().forEach(gasto -> {
 
-			String categoriaGasto = (gasto.getCdGastoRecurrente() != 0)
-					? gastosRecurrentes.get(gasto.getCdGastoRecurrente() - 1).getNbGasto()
-					: "N/A";
+			String categoriaGasto = "N/A";
+			if(gasto.getCdGastoRecurrente() != 0) {
+				for(GastoRecurrente gastoR : gastosRecurrentes) {
+					if(gastoR.getCdGasto().equals(gasto.getCdGastoRecurrente())) {
+						categoriaGasto = gastoR.getNbGasto();
+						break;
+					}
+				}
+			}
+			
+//			String categoriaGasto = (gasto.getCdGastoRecurrente() != 0)
+//					? gastosRecurrentes.get(gasto.getCdGastoRecurrente() - 1).getNbGasto()
+//					: "N/A";
 			String tipoMovimientoGasto = (gasto.getCdTipoMovimiento() == 1) ? "Ingreso" : "Gasto";
 
 			dtoGastos.add(new GastoDto(gasto.getId(), gasto.getFechaCreacion(), gasto.getMonto(), gasto.getDescripcion(),

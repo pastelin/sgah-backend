@@ -32,7 +32,7 @@ import com.springboot.sgah.backend.apirest.entities.GastoRecurrente;
 import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
 import com.springboot.sgah.backend.apirest.services.GastoService;
 
-@CrossOrigin(origins = { "http://127.0.0.1:5173/" })
+@CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController
 @RequestMapping("/gasto/v0/gasto")
 public class GastoRestController {
@@ -172,9 +172,10 @@ public class GastoRestController {
 		
 		try {
 			
+			// TODO: analizar el proceso para ingresos y gastos
 			montoDisponible = gastoService.calcularMontoDisponible();
 			
-			if(gasto.getMonto().compareTo(montoDisponible) >= 1) {
+			if(gasto.getCdTipoMovimiento() == 2 && gasto.getMonto().compareTo(montoDisponible) >= 1) {
 				response.put(TEXT_MENSAJE, "El monto ingresado no debe ser mayor a $ " + montoDisponible);
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}

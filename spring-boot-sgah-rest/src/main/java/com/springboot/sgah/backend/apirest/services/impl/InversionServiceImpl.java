@@ -1,6 +1,7 @@
 package com.springboot.sgah.backend.apirest.services.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import com.springboot.sgah.backend.apirest.dao.CatalogoAppInversionDao;
 import com.springboot.sgah.backend.apirest.dao.InversionDao;
 import com.springboot.sgah.backend.apirest.entities.CatalogoAppInversion;
 import com.springboot.sgah.backend.apirest.entities.Inversion;
+import com.springboot.sgah.backend.apirest.entities.InversionDto;
 import com.springboot.sgah.backend.apirest.services.InversionService;
 
 @Service
@@ -47,9 +49,8 @@ public class InversionServiceImpl implements InversionService {
 
 	@Override
 	@Transactional
-	public void updateInversion(Inversion inversion) {
-//		inversionDao.updateInversion(inversion.getMonto(), inversion.getFolio());
-		inversionDao.save(inversion);
+	public Inversion updateInversion(Inversion inversion) {
+		return inversionDao.save(inversion);
 		
 	}
 
@@ -57,6 +58,37 @@ public class InversionServiceImpl implements InversionService {
 	@Transactional(readOnly = true)
 	public BigDecimal obtenerMontoActual(String folio) {
 		return inversionDao.obtenerMontoActual(folio);
+	}
+
+	@Override
+	public List<InversionDto> updateDescripcionInversion(List<Inversion> inversiones) {
+		
+		List<InversionDto> inversionesDto = new ArrayList<>();
+		List<CatalogoAppInversion> catalogos =  (List<CatalogoAppInversion>) catalogoDao.findAll();
+		
+		inversiones.stream().forEach(inversion -> {
+
+			InversionDto inversionDto = new InversionDto(inversion);
+			
+			catalogos.stream().forEach( catalogo -> {
+				
+				if (inversion.getCdAppInversion() == catalogo.getCdAppInversion()) {
+					inversionDto.setNbAppInversion(catalogo.getNbAppInversion());
+					return;
+				}
+				
+			});
+			
+			inversionesDto.add(inversionDto);
+		});
+		
+		
+		return inversionesDto;
+	}
+
+	@Override
+	public Inversion obtenerInversion(String folio) {
+		return inversionDao.findById(folio).orElse(null);
 	}
 
 }

@@ -4,6 +4,7 @@ import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_ERROR;
 import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_MENSAJE;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.sgah.backend.apirest.entities.CatalogoAppInversion;
 import com.springboot.sgah.backend.apirest.entities.Inversion;
+import com.springboot.sgah.backend.apirest.entities.InversionDto;
 import com.springboot.sgah.backend.apirest.services.InversionService;;
 
+@CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController
 @RequestMapping("/inversion/v0/inversion")
 public class InversionRestController {
@@ -34,26 +39,29 @@ public class InversionRestController {
 	@Autowired
 	InversionService inversionService;
 	
-	@GetMapping("/consulta")
+	@GetMapping("/detalle")
 	public ResponseEntity<?> findAllInversion() {
 		
 		Map<String, Object> response = new HashMap<>();
 		List<Inversion> inversiones = null;
+		List<InversionDto> inversionesDto = null;
 		
 		try {
 			inversiones = inversionService.findAllInversion();
+			inversionesDto = inversionService.updateDescripcionInversion(inversiones);
+			
 		} catch(DataAccessException e) {
 			response.put(TEXT_MENSAJE, "Error al realizar la consulta en la base de datos");
 			response.put(TEXT_ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getLocalizedMessage()));
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if(inversiones == null || inversiones.isEmpty()) {
+		if(inversionesDto == null || inversionesDto.isEmpty()) {
 			response.put(TEXT_MENSAJE, "No hay información de inversiones");
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 		
-		return new ResponseEntity<>(inversiones, HttpStatus.OK);
+		return new ResponseEntity<>(inversionesDto, HttpStatus.OK);
 	}
 	
 
@@ -84,6 +92,7 @@ public class InversionRestController {
 	public ResponseEntity<Map<String, Object>> agregarInversion(@Valid @RequestBody Inversion inversion, BindingResult result) {
 		
 		Map<String, Object> response = new HashMap<>();
+		InversionDto inversionDto = null;
 		
 		if (result.hasErrors()) {
 			List<String> errors = result.getFieldErrors().stream()
@@ -95,7 +104,10 @@ public class InversionRestController {
 		}
 		
 		try {
+			// Implementar que el SP regrese valores
 			inversionService.saveInversion(inversion);
+			inversionDto = inversionService.updateDescripcionInversion(Arrays.asList(inversion)).get(0);
+			
 		} catch(DataException e) {
 			response.put(TEXT_MENSAJE, "Error al guardar en la base de datos");
 			response.put(TEXT_ERROR, e.getMessage().concat(": ").concat(e.getLocalizedMessage()));
@@ -103,6 +115,7 @@ public class InversionRestController {
 		}
 		
 		response.put(TEXT_MENSAJE, "Inversion guardada con éxito!");
+		response.put("inversion", inversionDto);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 		
 	}
@@ -112,6 +125,7 @@ public class InversionRestController {
 		
 		Map<String, Object> response = new HashMap<>();
 		BigDecimal montoActual = null;
+		Inversion inversionUpdated = null;
 		
 		if (result.hasErrors()) {
 			List<String> errors = result.getFieldErrors().stream()
@@ -137,7 +151,7 @@ public class InversionRestController {
 			}
 			
 			inversion.setMonto(montoActual.subtract(montoNuevo));
-			inversionService.updateInversion(inversion);
+			inversionUpdated = inversionService.updateInversion(inversion);
 		} catch(DataException e) {
 			response.put(TEXT_MENSAJE, "Error al guardar en la base de datos");
 			response.put(TEXT_ERROR, e.getMessage().concat(": ").concat(e.getLocalizedMessage()));
@@ -145,11 +159,12 @@ public class InversionRestController {
 		}
 		
 		response.put(TEXT_MENSAJE, "Retiro de inversion realizado con exito!");
+		response.put("inversion", inversionUpdated);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 		
 	}
 	
-	@GetMapping("/consultaCalculo")
+	@GetMapping("/saldoInvertido")
 	public ResponseEntity<?> calcularTotalInversion() {
 		
 		Map<String, Object> response = new HashMap<>();
@@ -165,5 +180,29 @@ public class InversionRestController {
 		
 		return new ResponseEntity<>(montoInvertido, HttpStatus.OK);
 	}
+	
+	@GetMapping("/detalleInversion/{folio}")
+	public ResponseEntity<?> obtenerInversionByFolio(@PathVariable String folio) {
+
+		Map<String, Object> response = new HashMap<>();
+		Inversion inversion = null;
+
+		try {
+			inversion = inversionService.obtenerInversion(folio);
+		} catch (DataAccessException ex) {
+			response.put(TEXT_MENSAJE, "Error al realizar consulta en base de datos");
+			response.put(TEXT_ERROR,
+					ex.getMessage().concat(": ").concat(ex.getMostSpecificCause().getLocalizedMessage()));
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		if (inversion == null) {
+			response.put(TEXT_MENSAJE, "No existe la inversion");
+			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+		}
+
+		return new ResponseEntity<>(inversion, HttpStatus.OK);
+	}
+
 	
 }
