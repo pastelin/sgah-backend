@@ -4,8 +4,10 @@ import java.time.LocalDate;
 
 public class LocalDateUtil {
 
-	public static int getMonth(LocalDate date) {
+	private LocalDateUtil() {
+	}
 
+	public static int getMonth(LocalDate date) {
 		if (date == null) {
 			date = LocalDate.now();
 		}
@@ -14,9 +16,8 @@ public class LocalDateUtil {
 	}
 
 	public static int getYear(LocalDate date) {
-		
-		if(date == null) {
-			date = LocalDate.now();			
+		if (date == null) {
+			date = LocalDate.now();
 		}
 
 		return date.getYear();

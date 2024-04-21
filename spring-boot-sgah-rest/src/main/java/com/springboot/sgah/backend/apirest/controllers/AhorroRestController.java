@@ -1,6 +1,5 @@
 package com.springboot.sgah.backend.apirest.controllers;
 
-import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_ERROR;
 import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_MENSAJE;
 
 import java.math.BigDecimal;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.sgah.backend.apirest.entities.Ahorro;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
-import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
 
 @CrossOrigin(origins = { "http://localhost:5173/" })
@@ -35,30 +33,6 @@ public class AhorroRestController {
 
 	@Autowired
 	AhorroService ahorroService;
-
-	// TODO: validar método
-	@GetMapping("/detalle1")
-	public ResponseEntity<?> findAhorroByCurrentMonth() {
-
-		Map<String, Object> response = new HashMap<>();
-		List<Ahorro> ahorros = null;
-
-		try {
-			ahorros = ahorroService.findAhorroByCurrentMonth(LocalDateUtil.getMonth(null), LocalDateUtil.getYear(null));
-		} catch (DataAccessException e) {
-			response.put(TEXT_MENSAJE, "Error al realizar la consulta en la base de datos");
-			response.put(TEXT_ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
-		if (ahorros == null || ahorros.isEmpty()) {
-			response.put(TEXT_MENSAJE, "No hay información de ahorros");
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-
-		return new ResponseEntity<>(ahorros, HttpStatus.OK);
-
-	}
 
 	@GetMapping("/")
 	public ResponseEntity<Map<String, Object>> findAllAhorro() {
