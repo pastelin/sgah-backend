@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="catalogo_app_inversiones")
-public class CatalogoAppInversion {
+public class ProductoFinanciero { 
 
 	@Id
 	@Column(name="cd_app_inversion")

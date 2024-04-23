@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.springboot.sgah.backend.apirest.dao.CatalogoAppInversionDao;
+import com.springboot.sgah.backend.apirest.dao.ProductoFinancieroDao;
 import com.springboot.sgah.backend.apirest.dao.InversionDao;
-import com.springboot.sgah.backend.apirest.entities.CatalogoAppInversion;
+import com.springboot.sgah.backend.apirest.entities.ProductoFinanciero;
 import com.springboot.sgah.backend.apirest.entities.Inversion;
 import com.springboot.sgah.backend.apirest.entities.InversionDto;
 import com.springboot.sgah.backend.apirest.services.InversionService;
@@ -22,7 +22,7 @@ public class InversionServiceImpl implements InversionService {
 	InversionDao inversionDao;
 	
 	@Autowired
-	CatalogoAppInversionDao catalogoDao;
+	ProductoFinancieroDao catalogoDao;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -37,8 +37,8 @@ public class InversionServiceImpl implements InversionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<CatalogoAppInversion> findAllCatalogoAppInversion() {
-		return (List<CatalogoAppInversion>) catalogoDao.findAll();
+	public List<ProductoFinanciero> findAllProductosFinancieros() {
+		return (List<ProductoFinanciero>) catalogoDao.findAll();
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class InversionServiceImpl implements InversionService {
 	public List<InversionDto> updateDescripcionInversion(List<Inversion> inversiones) {
 		
 		List<InversionDto> inversionesDto = new ArrayList<>();
-		List<CatalogoAppInversion> catalogos =  (List<CatalogoAppInversion>) catalogoDao.findAll();
+		List<ProductoFinanciero> catalogos =  (List<ProductoFinanciero>) catalogoDao.findAll();
 		
 		inversiones.stream().forEach(inversion -> {
 

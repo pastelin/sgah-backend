@@ -3,7 +3,7 @@ package com.springboot.sgah.backend.apirest.services;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.springboot.sgah.backend.apirest.entities.CatalogoAppInversion;
+import com.springboot.sgah.backend.apirest.entities.ProductoFinanciero;
 import com.springboot.sgah.backend.apirest.entities.Inversion;
 import com.springboot.sgah.backend.apirest.entities.InversionDto;
 
@@ -19,7 +19,7 @@ public interface InversionService {
 	
 	BigDecimal obtenerMontoActual(String folio);
 	
-	List<CatalogoAppInversion> findAllCatalogoAppInversion();
+	List<ProductoFinanciero> findAllProductosFinancieros();
 	
 	void saveInversion(Inversion inversion);
 
