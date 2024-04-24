@@ -1,14 +1,12 @@
 package com.springboot.sgah.backend.apirest.controllers;
 
-import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_ERROR;
 import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_MENSAJE;
+import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_PRESTAMO;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import javax.validation.Valid;
 
 import org.hibernate.exception.DataException;
@@ -21,19 +19,21 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.sgah.backend.apirest.entities.Gasto;
 import com.springboot.sgah.backend.apirest.entities.Prestamo;
+import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
 import com.springboot.sgah.backend.apirest.services.GastoService;
 import com.springboot.sgah.backend.apirest.services.PrestamoService;
 
 @CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController
-@RequestMapping("/prestamo/v0/prestamo")
+@RequestMapping("/sgah/v0/prestamo")
 public class PrestamoRestController {
 
 	@Autowired
@@ -45,71 +45,66 @@ public class PrestamoRestController {
 	@Autowired
 	GastoService gastoService;
 
-	@GetMapping("/detallePrestamosActivos")
-	public ResponseEntity<?> listarPrestamoActivo() {
+	@GetMapping("/")
+	public ResponseEntity<Map<String, Object>> listarPrestamoActivo() {
 
 		Map<String, Object> response = new HashMap<>();
 		List<Prestamo> prestamos = null;
 
 		try {
 			prestamos = prestamoService.listarPrestamoActivo();
-		} catch (DataAccessException ex) {
-			response.put(TEXT_MENSAJE, "Error al realizar consulta en base de datos");
-			response.put(TEXT_ERROR,
-					ex.getMessage().concat(": ").concat(ex.getMostSpecificCause().getLocalizedMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (DataAccessException e) {
+			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		if (prestamos == null || prestamos.isEmpty()) {
-			response.put(TEXT_MENSAJE, "No hay prestamos activos");
+			response.put(TEXT_MENSAJE, "No hay información de prestamos");
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 
-		return new ResponseEntity<>(prestamos, HttpStatus.OK);
+		response.put("prestamos", prestamos);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
-	@GetMapping("/detallePrestamo/{folio}")
-	public ResponseEntity<?> obtenerPrestamoByFolio(@PathVariable String folio) {
+
+	@GetMapping("/{folio}")
+	public ResponseEntity<Map<String, Object>> obtenerPrestamoByFolio(@PathVariable String folio) {
 
 		Map<String, Object> response = new HashMap<>();
-		Prestamo prestamos = null;
+		Prestamo prestamo = null;
 
 		try {
-			prestamos = prestamoService.obtenerPrestamo(folio);
-		} catch (DataAccessException ex) {
-			response.put(TEXT_MENSAJE, "Error al realizar consulta en base de datos");
-			response.put(TEXT_ERROR,
-					ex.getMessage().concat(": ").concat(ex.getMostSpecificCause().getLocalizedMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			prestamo = prestamoService.obtenerPrestamo(folio);
+		} catch (DataAccessException e) {
+			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		if (prestamos == null) {
-			response.put(TEXT_MENSAJE, "No existe el prestamo");
+		if (prestamo == null) {
+			response.put(TEXT_MENSAJE, "No hay información del prestamo.");
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 
-		return new ResponseEntity<>(prestamos, HttpStatus.OK);
+		response.put(TEXT_PRESTAMO, prestamo);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/saldoUtilizado")
-	public ResponseEntity<?> obtenerSaldoUtilizado() {
+	public ResponseEntity<Map<String, Object>> obtenerSaldoUtilizado() {
 
 		Map<String, Object> response = new HashMap<>();
 		BigDecimal saldoUtilizado = null;
 
 		try {
 			saldoUtilizado = prestamoService.calcularPrestamo();
-		} catch (DataAccessException ex) {
-			response.put(TEXT_MENSAJE, "Error al realizar consulta en base de datos");
-			response.put(TEXT_ERROR,
-					ex.getMessage().concat(": ").concat(ex.getMostSpecificCause().getLocalizedMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (DataAccessException e) {
+			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		return new ResponseEntity<>(saldoUtilizado, HttpStatus.OK);
+		response.put("saldoUtilizado", saldoUtilizado);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/new")
+	// TODO: Analizar si se puede refactorizar este método (Reglas de negocio)
+	@PostMapping("/")
 	public ResponseEntity<Map<String, Object>> agregarPrestamo(@Valid @RequestBody Prestamo prestamo,
 			BindingResult result) {
 
@@ -117,49 +112,41 @@ public class PrestamoRestController {
 		Prestamo prestamoSaved = null;
 
 		if (result.hasErrors()) {
-			List<String> errors = result.getFieldErrors().stream()
-					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-					.collect(Collectors.toList());
-
-			response.put("errors", errors);
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorMessageUtil.getFieldsErrorMessage(result), HttpStatus.BAD_REQUEST);
 		}
 
 		try {
+			BigDecimal saldoAhorrado = ahorroService.calcularAhorro();
 
-			BigDecimal montoAhorrado = ahorroService.calcularAhorro();
-
-			if (montoAhorrado == null) {
-				response.put(TEXT_MENSAJE, "Error al obtener el monto del ahorro en base de datos.");
+			if (saldoAhorrado == null) {
+				response.put(TEXT_MENSAJE, "No hay información del saldo ahorrado.");
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			}
 
-			if (prestamo.getMontoPrestado().compareTo(montoAhorrado) >= 1) {
-				response.put(TEXT_MENSAJE, "El monto a prestar no debe ser mayor a $" + montoAhorrado);
+			if (prestamo.getMontoPrestado().compareTo(saldoAhorrado) >= 1) {
+				response.put(TEXT_MENSAJE, "El monto no debe ser mayor a $" + saldoAhorrado);
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
 
 			prestamoSaved = prestamoService.agregarPrestamo(prestamo);
 
+			// TODO: Refactorizar para que lo ejecute la capa de GASTO
 			Gasto gasto = new Gasto();
 			gasto.setDescripcion(prestamo.getDescripcion());
 			gasto.setMonto(prestamo.getMontoPrestado());
 			gasto.setCdGastoRecurrente(11);
 
 			gastoService.saveGasto(gasto);
-
-		} catch (DataException ex) {
-			response.put(TEXT_MENSAJE, "Error al guardar en base de datos");
-			response.put(TEXT_ERROR, ex.getMessage().concat(": ").concat(ex.getLocalizedMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (DataException e) {
+			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		response.put(TEXT_MENSAJE, "Prestamo guardado con éxito!");
-		response.put("prestamo", prestamoSaved);
+		response.put(TEXT_PRESTAMO, prestamoSaved);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/operacionActualiza")
+	@PutMapping("/")
 	public ResponseEntity<Map<String, Object>> actualizarPrestamo(@Valid @RequestBody Prestamo prestamo,
 			BindingResult result) {
 
@@ -167,12 +154,7 @@ public class PrestamoRestController {
 		Prestamo prestamoUpdated = null;
 
 		if (result.hasErrors()) {
-			List<String> errors = result.getFieldErrors().stream()
-					.map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-					.collect(Collectors.toList());
-
-			response.put("errors", errors);
-			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(ErrorMessageUtil.getFieldsErrorMessage(result), HttpStatus.BAD_REQUEST);
 		}
 
 		try {
@@ -183,19 +165,14 @@ public class PrestamoRestController {
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			}
 
-			BigDecimal montoPrestado = prestamoAnterior.getMontoPrestado();
-			BigDecimal montoPagado = prestamoAnterior.getMontoPagado();
-			BigDecimal montoDeuda = montoPrestado.subtract(montoPagado);
+			BigDecimal saldoPrestado = prestamoAnterior.getMontoPrestado();
+			BigDecimal saldoPagado = prestamoAnterior.getMontoPagado();
+			BigDecimal saldoDeuda = saldoPrestado.subtract(saldoPagado);
+			BigDecimal saldoDisponibleGasto = gastoService.calcularMontoDisponible();
 
-			if (prestamo.getMontoPagado().compareTo(montoDeuda) >= 1) {
-				response.put(TEXT_MENSAJE, "El monto a pagar no puede ser mayor a $" + montoDeuda);
-				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
-			}
-
-			BigDecimal montoGastoDisponible = gastoService.calcularMontoDisponible();
-
-			if (prestamo.getMontoPagado().compareTo(montoGastoDisponible) >= 1) {
-				response.put(TEXT_MENSAJE, "El monto a pagar no puede ser mayor a $" + montoGastoDisponible);
+			if (prestamo.getMontoPagado().compareTo(saldoDeuda) >= 1
+					|| prestamo.getMontoPagado().compareTo(saldoDisponibleGasto) >= 1) {
+				response.put(TEXT_MENSAJE, "El monto no debe ser mayor a la deuda actual o saldo disponible.");
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
 
@@ -205,23 +182,21 @@ public class PrestamoRestController {
 			gasto.setCdGastoRecurrente(11);
 			gasto.setDescripcion(prestamo.getDescripcion());
 
-			prestamo.setMontoPagado(prestamo.getMontoPagado().add(montoPagado));
+			prestamo.setMontoPagado(prestamo.getMontoPagado().add(saldoPagado));
 
-			if (montoPrestado.compareTo(prestamo.getMontoPagado()) == 0) {
+			if (saldoPrestado.compareTo(prestamo.getMontoPagado()) == 0) {
 				prestamo.setCdEstatus(2);
 			}
 
 			prestamoUpdated = prestamoService.actualizarPrestamo(prestamo);
 			gastoService.saveGasto(gasto);
 
-		} catch (DataException ex) {
-			response.put(TEXT_MENSAJE, "Error al guardar en base de datos");
-			response.put(TEXT_ERROR, ex.getMessage().concat(": ").concat(ex.getLocalizedMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (DataException e) {
+			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		response.put(TEXT_MENSAJE, "Prestamo actualizado con éxito!");
-		response.put("prestamo", prestamoUpdated);
+		response.put(TEXT_PRESTAMO, prestamoUpdated);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
