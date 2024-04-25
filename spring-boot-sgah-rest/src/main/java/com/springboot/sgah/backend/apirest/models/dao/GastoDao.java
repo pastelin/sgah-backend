@@ -1,4 +1,4 @@
-package com.springboot.sgah.backend.apirest.dao;
+package com.springboot.sgah.backend.apirest.models.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.springboot.sgah.backend.apirest.entities.Gasto;
+import com.springboot.sgah.backend.apirest.models.entities.Gasto;
 
 public interface GastoDao extends CrudRepository<Gasto, Long> {
 

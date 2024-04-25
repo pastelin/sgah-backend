@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springboot.sgah.backend.apirest.entities.ProductoFinanciero;
-import com.springboot.sgah.backend.apirest.entities.Inversion;
-import com.springboot.sgah.backend.apirest.entities.InversionDto;
+import com.springboot.sgah.backend.apirest.models.entities.Inversion;
+import com.springboot.sgah.backend.apirest.models.entities.InversionDto;
+import com.springboot.sgah.backend.apirest.models.entities.ProductoFinanciero;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.InversionService;
 

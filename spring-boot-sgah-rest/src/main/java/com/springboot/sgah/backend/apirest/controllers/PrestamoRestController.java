@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springboot.sgah.backend.apirest.entities.Gasto;
-import com.springboot.sgah.backend.apirest.entities.Prestamo;
+import com.springboot.sgah.backend.apirest.models.entities.Gasto;
+import com.springboot.sgah.backend.apirest.models.entities.Prestamo;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
 import com.springboot.sgah.backend.apirest.services.GastoService;

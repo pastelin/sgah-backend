@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.springboot.sgah.backend.apirest.dao.PrestamoDao;
-import com.springboot.sgah.backend.apirest.entities.Prestamo;
+import com.springboot.sgah.backend.apirest.models.dao.PrestamoDao;
+import com.springboot.sgah.backend.apirest.models.entities.Prestamo;
 import com.springboot.sgah.backend.apirest.services.PrestamoService;
 
 @Service

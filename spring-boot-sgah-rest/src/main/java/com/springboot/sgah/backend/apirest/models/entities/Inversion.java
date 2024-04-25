@@ -1,4 +1,4 @@
-package com.springboot.sgah.backend.apirest.entities;
+package com.springboot.sgah.backend.apirest.models.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

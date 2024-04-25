@@ -1,4 +1,4 @@
-package com.springboot.sgah.backend.apirest.entities;
+package com.springboot.sgah.backend.apirest.models.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springboot.sgah.backend.apirest.entities.Gasto;
-import com.springboot.sgah.backend.apirest.entities.GastoDto;
-import com.springboot.sgah.backend.apirest.entities.GastoRecurrente;
+import com.springboot.sgah.backend.apirest.models.entities.Gasto;
+import com.springboot.sgah.backend.apirest.models.entities.GastoDto;
+import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
 import com.springboot.sgah.backend.apirest.services.GastoService;

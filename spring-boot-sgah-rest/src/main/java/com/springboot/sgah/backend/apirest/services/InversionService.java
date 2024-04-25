@@ -3,9 +3,9 @@ package com.springboot.sgah.backend.apirest.services;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.springboot.sgah.backend.apirest.entities.ProductoFinanciero;
-import com.springboot.sgah.backend.apirest.entities.Inversion;
-import com.springboot.sgah.backend.apirest.entities.InversionDto;
+import com.springboot.sgah.backend.apirest.models.entities.Inversion;
+import com.springboot.sgah.backend.apirest.models.entities.InversionDto;
+import com.springboot.sgah.backend.apirest.models.entities.ProductoFinanciero;
 
 public interface InversionService {
 

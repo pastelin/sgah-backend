@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.springboot.sgah.backend.apirest.dao.GastoDao;
-import com.springboot.sgah.backend.apirest.dao.GastoRecurrenteDao;
-import com.springboot.sgah.backend.apirest.entities.Gasto;
-import com.springboot.sgah.backend.apirest.entities.GastoDto;
-import com.springboot.sgah.backend.apirest.entities.GastoRecurrente;
+import com.springboot.sgah.backend.apirest.models.dao.GastoDao;
+import com.springboot.sgah.backend.apirest.models.dao.GastoRecurrenteDao;
+import com.springboot.sgah.backend.apirest.models.entities.Gasto;
+import com.springboot.sgah.backend.apirest.models.entities.GastoDto;
+import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
 import com.springboot.sgah.backend.apirest.services.GastoService;
 
 @Service

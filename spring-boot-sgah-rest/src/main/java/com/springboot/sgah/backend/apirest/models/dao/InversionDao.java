@@ -1,4 +1,4 @@
-package com.springboot.sgah.backend.apirest.dao;
+package com.springboot.sgah.backend.apirest.models.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import com.springboot.sgah.backend.apirest.entities.Inversion;
+import com.springboot.sgah.backend.apirest.models.entities.Inversion;
 
 public interface InversionDao extends CrudRepository<Inversion, String> {
 	

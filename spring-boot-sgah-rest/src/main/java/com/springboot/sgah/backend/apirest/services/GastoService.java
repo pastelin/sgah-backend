@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.springboot.sgah.backend.apirest.entities.Gasto;
-import com.springboot.sgah.backend.apirest.entities.GastoDto;
-import com.springboot.sgah.backend.apirest.entities.GastoRecurrente;
+import com.springboot.sgah.backend.apirest.models.entities.Gasto;
+import com.springboot.sgah.backend.apirest.models.entities.GastoDto;
+import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
 
 public interface GastoService {
 

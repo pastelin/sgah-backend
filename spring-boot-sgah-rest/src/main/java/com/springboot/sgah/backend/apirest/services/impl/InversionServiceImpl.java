@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.springboot.sgah.backend.apirest.dao.ProductoFinancieroDao;
-import com.springboot.sgah.backend.apirest.dao.InversionDao;
-import com.springboot.sgah.backend.apirest.entities.ProductoFinanciero;
-import com.springboot.sgah.backend.apirest.entities.Inversion;
-import com.springboot.sgah.backend.apirest.entities.InversionDto;
+import com.springboot.sgah.backend.apirest.models.dao.InversionDao;
+import com.springboot.sgah.backend.apirest.models.dao.ProductoFinancieroDao;
+import com.springboot.sgah.backend.apirest.models.entities.Inversion;
+import com.springboot.sgah.backend.apirest.models.entities.InversionDto;
+import com.springboot.sgah.backend.apirest.models.entities.ProductoFinanciero;
 import com.springboot.sgah.backend.apirest.services.InversionService;
 
 @Service

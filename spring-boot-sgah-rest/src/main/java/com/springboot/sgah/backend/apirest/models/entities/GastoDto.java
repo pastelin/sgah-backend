@@ -1,4 +1,4 @@
-package com.springboot.sgah.backend.apirest.entities;
+package com.springboot.sgah.backend.apirest.models.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

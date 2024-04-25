@@ -3,7 +3,7 @@ package com.springboot.sgah.backend.apirest.services;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.springboot.sgah.backend.apirest.entities.Ahorro;
+import com.springboot.sgah.backend.apirest.models.entities.Ahorro;
 
 public interface AhorroService {
 

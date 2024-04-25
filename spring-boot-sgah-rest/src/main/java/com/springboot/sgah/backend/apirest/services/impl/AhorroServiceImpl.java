@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.springboot.sgah.backend.apirest.dao.AhorroDao;
-import com.springboot.sgah.backend.apirest.dao.InversionDao;
-import com.springboot.sgah.backend.apirest.dao.PrestamoDao;
-import com.springboot.sgah.backend.apirest.entities.Ahorro;
+import com.springboot.sgah.backend.apirest.models.dao.AhorroDao;
+import com.springboot.sgah.backend.apirest.models.dao.InversionDao;
+import com.springboot.sgah.backend.apirest.models.dao.PrestamoDao;
+import com.springboot.sgah.backend.apirest.models.entities.Ahorro;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
 
 @Service

@@ -1,8 +1,8 @@
-package com.springboot.sgah.backend.apirest.entities;
+package com.springboot.sgah.backend.apirest.models.entities;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,13 +14,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="gastos")
-public class Gasto implements Serializable {
+@Table(name="ahorros")
+public class Ahorro implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@NotNull
@@ -28,31 +28,19 @@ public class Gasto implements Serializable {
 	private LocalDate fechaCreacion;
 	
 	@NotNull
-	private BigDecimal monto;
+	private Double monto;
 	
 	@NotEmpty
 	private String descripcion;
 	
-	@NotNull
-	@Column(name="cd_gasto_recurrente")
-	private Integer cdGastoRecurrente;
-	
-	@NotNull
 	@Column(name="cd_estatus")
 	private Integer cdEstatus;
-	
-	@NotNull
-	@Column(name="cd_tipo_movimiento_gasto")
-	private Integer cdTipoMovimiento;
 
-	
-	
-	public Gasto() {
+	public Ahorro() {
 		this.fechaCreacion = LocalDate.now();
 		this.cdEstatus = 1;
-		this.cdTipoMovimiento = 1;
 	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -69,11 +57,11 @@ public class Gasto implements Serializable {
 		this.fechaCreacion = fechaCreacion;
 	}
 
-	public BigDecimal getMonto() {
+	public Double getMonto() {
 		return monto;
 	}
 
-	public void setMonto(BigDecimal monto) {
+	public void setMonto(Double monto) {
 		this.monto = monto;
 	}
 
@@ -85,28 +73,12 @@ public class Gasto implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-	public Integer getCdGastoRecurrente() {
-		return cdGastoRecurrente;
-	}
-
-	public void setCdGastoRecurrente(Integer cdGastoRecurrente) {
-		this.cdGastoRecurrente = cdGastoRecurrente;
-	}
-
 	public Integer getCdEstatus() {
 		return cdEstatus;
 	}
 
 	public void setCdEstatus(Integer cdEstatus) {
 		this.cdEstatus = cdEstatus;
-	}
-
-	public Integer getCdTipoMovimiento() {
-		return cdTipoMovimiento;
-	}
-
-	public void setCdTipoMovimiento(Integer cdTipoMovimiento) {
-		this.cdTipoMovimiento = cdTipoMovimiento;
 	}
 	
 }
