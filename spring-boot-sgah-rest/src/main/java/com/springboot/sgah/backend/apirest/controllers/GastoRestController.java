@@ -3,7 +3,7 @@ package com.springboot.sgah.backend.apirest.controllers;
 import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_MENSAJE;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +22,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.sgah.backend.apirest.models.dto.GastoDto;
+import com.springboot.sgah.backend.apirest.models.dto.GastoRecurrenteDto;
+import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperGasto;
+import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperGastoRecurrente;
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
-import com.springboot.sgah.backend.apirest.models.entities.GastoDto;
 import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
@@ -39,21 +42,19 @@ public class GastoRestController {
 
 	@GetMapping("/")
 	public ResponseEntity<Map<String, Object>> findGastoByCurrentMonth() {
-
 		Map<String, Object> response = new HashMap<>();
-		List<Gasto> gastos = null;
-		List<GastoDto> gastosDto = null;
+		List<GastoDto> gastosDto = new ArrayList<>();
 
 		try {
-			gastos = gastoService.findGastoByCurrentMonth(LocalDateUtil.getMonth(null), LocalDateUtil.getYear(null));
-			gastosDto = gastoService.updateDescripcionGasto(gastos);
+			List<Gasto> gastos = gastoService.findGastoByCurrentMonth(LocalDateUtil.getMonth(null),
+					LocalDateUtil.getYear(null));
+
+			for (Gasto gasto : gastos) {
+				gastosDto.add(
+						DtoMapperGasto.builder().setGasto(gasto).buildGastoDto(gastoService.findAllGastoRecurrente()));
+			}
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
-		if (gastos == null || gastos.isEmpty()) {
-			response.put(TEXT_MENSAJE, "No hay información de gastos");
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 
 		response.put("gastos", gastosDto);
@@ -88,33 +89,29 @@ public class GastoRestController {
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<Map<String, Object>> guardarGasto(@Valid @RequestBody Gasto gasto, BindingResult result) {
+	public ResponseEntity<Map<String, Object>> guardarGasto(@Valid @RequestBody GastoDto gasto, BindingResult result) {
 
 		Map<String, Object> response = new HashMap<>();
-		GastoDto gastoDto = null;
-		BigDecimal saldoDisponible = null;
 
 		if (result.hasErrors()) {
 			return new ResponseEntity<>(ErrorMessageUtil.getFieldsErrorMessage(result), HttpStatus.BAD_REQUEST);
 		}
 
 		try {
-			saldoDisponible = gastoService.calcularMontoDisponible();
+			BigDecimal saldoDisponible = gastoService.calcularMontoDisponible();
 
-			if (gasto.getCdTipoMovimiento() == 2 && gasto.getMonto().compareTo(saldoDisponible) >= 1) {
+			if (gasto.getTipoMovimiento().getCdTipo() == 2 && gasto.getMonto().compareTo(saldoDisponible) >= 1) {
 				response.put(TEXT_MENSAJE, "El monto ingresado no debe ser mayor a $ " + saldoDisponible);
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
 
-			gastoService.saveGasto(gasto);
-			gastoDto = gastoService.updateDescripcionGasto(Arrays.asList(gasto)).get(0);
+			gastoService.saveGasto(DtoMapperGasto.builder().setGastoDto(gasto).buiGasto());
 
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		response.put(TEXT_MENSAJE, "Gasto guardado con éxito!");
-		response.put("gasto", gastoDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
@@ -123,20 +120,21 @@ public class GastoRestController {
 	public ResponseEntity<Map<String, Object>> obtenerGastoRecurrente() {
 
 		Map<String, Object> response = new HashMap<>();
-		List<GastoRecurrente> gastosRecurrentes = null;
+		List<GastoRecurrenteDto> gastosRecurrentesDto = new ArrayList<>();
 
 		try {
-			gastosRecurrentes = gastoService.findAllGastoRecurrente();
+			List<GastoRecurrente> gastosRecurrentes = gastoService.findAllGastoRecurrente();
+
+			for (GastoRecurrente gastoRecurrente : gastosRecurrentes) {
+				gastosRecurrentesDto.add(DtoMapperGastoRecurrente.builder().setGastoRecurrente(gastoRecurrente)
+						.buildGastoRecurrenteDto());
+			}
+
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		if (gastosRecurrentes == null || gastosRecurrentes.isEmpty()) {
-			response.put(TEXT_MENSAJE, "No se obtuvo información en base de datos");
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-
-		response.put("gastosRecurrentes", gastosRecurrentes);
+		response.put("gastosRecurrentes", gastosRecurrentesDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

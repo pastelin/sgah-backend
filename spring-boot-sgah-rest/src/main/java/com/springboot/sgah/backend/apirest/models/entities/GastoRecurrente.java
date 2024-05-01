@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "gastos_recurrentes")
 public class GastoRecurrente {
 
-	@Id
+	@Id 
 	@Column(name = "cd_gasto")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cdGasto;

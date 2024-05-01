@@ -6,4 +6,4 @@ import com.springboot.sgah.backend.apirest.models.entities.ProductoFinanciero;
 
 public interface ProductoFinancieroDao extends CrudRepository<ProductoFinanciero, Integer> {
 
-} 
+}

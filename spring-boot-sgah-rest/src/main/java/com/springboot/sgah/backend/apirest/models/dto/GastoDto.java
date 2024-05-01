@@ -1,4 +1,4 @@
-package com.springboot.sgah.backend.apirest.models.entities;
+package com.springboot.sgah.backend.apirest.models.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,18 +12,21 @@ public class GastoDto {
 
 	private String descripcion;
 
-	private String nbGastoRecurrente;
+	private GastoRecurrenteDto gastoRecurrente;
 
-	private String nbTipoMovimiento;
-	
-	public GastoDto(Long id, LocalDate fechaCreacion, BigDecimal monto, String descripcion, String nbGastoRecurrente,
-			String nbTipoMovimiento) {
+	private TipoMovimientoDto tipoMovimiento;
+
+	public GastoDto() {
+	}
+
+	public GastoDto(Long id, LocalDate fechaCreacion, BigDecimal monto, String descripcion,
+			GastoRecurrenteDto gastoRecurrenteDto, TipoMovimientoDto tipoMovimientoDto) {
 		this.id = id;
 		this.fechaCreacion = fechaCreacion;
 		this.monto = monto;
 		this.descripcion = descripcion;
-		this.nbGastoRecurrente = nbGastoRecurrente;
-		this.nbTipoMovimiento = nbTipoMovimiento;
+		this.gastoRecurrente = gastoRecurrenteDto;
+		this.tipoMovimiento = tipoMovimientoDto;
 	}
 
 	public Long getId() {
@@ -50,20 +53,20 @@ public class GastoDto {
 		this.descripcion = descripcion;
 	}
 
-	public String getNbGastoRecurrente() {
-		return nbGastoRecurrente;
+	public GastoRecurrenteDto getGastoRecurrente() {
+		return gastoRecurrente;
 	}
 
-	public void setNbGastoRecurrente(String nbGastoRecurrente) {
-		this.nbGastoRecurrente = nbGastoRecurrente;
+	public void setGastoRecurrente(GastoRecurrenteDto gastoRecurrenteDto) {
+		this.gastoRecurrente = gastoRecurrenteDto;
 	}
 
-	public String getNbTipoMovimiento() {
-		return nbTipoMovimiento;
+	public TipoMovimientoDto getTipoMovimiento() {
+		return tipoMovimiento;
 	}
 
-	public void setNbTipoMovimiento(String nbTipoMovimiento) {
-		this.nbTipoMovimiento = nbTipoMovimiento;
+	public void setTipoMovimiento(TipoMovimientoDto tipoMovimientoDto) {
+		this.tipoMovimiento = tipoMovimientoDto;
 	}
 
 	public BigDecimal getMonto() {

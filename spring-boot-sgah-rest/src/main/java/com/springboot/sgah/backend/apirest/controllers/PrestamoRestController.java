@@ -132,6 +132,7 @@ public class PrestamoRestController {
 
 			// TODO: Refactorizar para que lo ejecute la capa de GASTO
 			Gasto gasto = new Gasto();
+			gasto.setCdTipoMovimiento(1);
 			gasto.setDescripcion(prestamo.getDescripcion());
 			gasto.setMonto(prestamo.getMontoPrestado());
 			gasto.setCdGastoRecurrente(11);

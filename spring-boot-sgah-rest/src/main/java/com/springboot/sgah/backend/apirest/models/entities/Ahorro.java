@@ -2,7 +2,6 @@ package com.springboot.sgah.backend.apirest.models.entities;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,33 +13,33 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="ahorros")
+@Table(name = "ahorros")
 public class Ahorro implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotNull
-	@Column(name="fecha_creacion")
+	@Column(name = "fecha_creacion")
 	private LocalDate fechaCreacion;
-	
+
 	@NotNull
 	private Double monto;
-	
+
 	@NotEmpty
 	private String descripcion;
-	
-	@Column(name="cd_estatus")
+
+	@Column(name = "cd_estatus")
 	private Integer cdEstatus;
 
 	public Ahorro() {
 		this.fechaCreacion = LocalDate.now();
 		this.cdEstatus = 1;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -80,5 +79,5 @@ public class Ahorro implements Serializable {
 	public void setCdEstatus(Integer cdEstatus) {
 		this.cdEstatus = cdEstatus;
 	}
-	
+
 }

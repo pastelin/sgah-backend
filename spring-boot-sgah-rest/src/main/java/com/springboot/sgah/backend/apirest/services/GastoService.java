@@ -1,11 +1,9 @@
 package com.springboot.sgah.backend.apirest.services;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
-import com.springboot.sgah.backend.apirest.models.entities.GastoDto;
 import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
 
 public interface GastoService {
@@ -18,17 +16,12 @@ public interface GastoService {
 
 	List<Gasto> findGastoByTipo(Integer value);
 
-	List<Gasto> findGastoByFecha(LocalDate fechaInicio, LocalDate fechaFin);
-	
 	List<GastoRecurrente> findAllGastoRecurrente();
 	
-	List<GastoDto> updateDescripcionGasto(List<Gasto> gastos);
-
-	Gasto saveGasto(Gasto gasto);
+	void saveGasto(Gasto gasto);
 
 	BigDecimal obtenerGastoMensual(int month, int year);
 
 	BigDecimal calcularMontoDisponible();
-
 	
 }
