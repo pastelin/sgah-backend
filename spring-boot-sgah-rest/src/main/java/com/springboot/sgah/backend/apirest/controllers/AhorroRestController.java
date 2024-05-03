@@ -3,6 +3,7 @@ package com.springboot.sgah.backend.apirest.controllers;
 import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_MENSAJE;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.sgah.backend.apirest.models.dto.AhorroDto;
+import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperAhorro;
 import com.springboot.sgah.backend.apirest.models.entities.Ahorro;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
@@ -38,20 +41,20 @@ public class AhorroRestController {
 	public ResponseEntity<Map<String, Object>> findAllAhorro() {
 
 		Map<String, Object> response = new HashMap<>();
-		List<Ahorro> ahorros = null;
+		List<AhorroDto> ahorrosDto = new ArrayList<>();
 
 		try {
-			ahorros = ahorroService.findAllAhorro();
+			List<Ahorro> ahorros = ahorroService.findAllAhorro();
+
+			for (Ahorro ahorro : ahorros) {
+				ahorrosDto.add(DtoMapperAhorro.builder().setAhorro(ahorro).buildAhorroDto());
+			}
+
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		if (ahorros == null || ahorros.isEmpty()) {
-			response.put(TEXT_MENSAJE, "No hay información de ahorros");
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-
-		response.put("ahorros", ahorros);
+		response.put("ahorros", ahorrosDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -79,7 +82,8 @@ public class AhorroRestController {
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<Map<String, Object>> guardarAhorro(@Valid @RequestBody Ahorro ahorro, BindingResult result) {
+	public ResponseEntity<Map<String, Object>> guardarAhorro(@Valid @RequestBody AhorroDto ahorro,
+			BindingResult result) {
 		Map<String, Object> response = new HashMap<>();
 
 		if (result.hasErrors()) {
@@ -87,7 +91,7 @@ public class AhorroRestController {
 		}
 
 		try {
-			ahorroService.saveAhorro(ahorro);
+			ahorroService.saveAhorro(DtoMapperAhorro.builder().setAhorroDto(ahorro).buildAhorro());
 		} catch (DataException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

@@ -10,5 +10,5 @@ public interface AhorroService {
 	List<Ahorro> findAllAhorro();
 	BigDecimal calcularAhorro();
 	List<Ahorro> findAhorroByCurrentMonth(int month, int year);
-	Ahorro saveAhorro(Ahorro ahorro);
+	void saveAhorro(Ahorro ahorro);
 }

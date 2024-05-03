@@ -18,13 +18,13 @@ public class AhorroServiceImpl implements AhorroService {
 
 	@Autowired
 	AhorroDao ahorroDao;
-	
+
 	@Autowired
 	PrestamoDao prestamoDao;
-	
+
 	@Autowired
 	InversionDao inversionDao;
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<Ahorro> findAllAhorro() {
@@ -37,7 +37,7 @@ public class AhorroServiceImpl implements AhorroService {
 		BigDecimal ahorro = ahorroDao.calcularAhorro();
 		BigDecimal inversion = inversionDao.calcularInversion();
 		BigDecimal prestamo = prestamoDao.calcularPrestamo();
-		
+
 		return ahorro.subtract(inversion).subtract(prestamo);
 	}
 
@@ -49,8 +49,8 @@ public class AhorroServiceImpl implements AhorroService {
 
 	@Override
 	@Transactional
-	public Ahorro saveAhorro(Ahorro ahorro) {
-		return ahorroDao.save(ahorro);
+	public void saveAhorro(Ahorro ahorro) {
+		ahorroDao.save(ahorro);
 	}
 
 }
