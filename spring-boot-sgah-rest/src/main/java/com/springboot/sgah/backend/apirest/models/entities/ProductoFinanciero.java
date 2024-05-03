@@ -6,14 +6,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="catalogo_app_inversiones")
-public class ProductoFinanciero { 
+@Table(name = "productos_financieros")
+public class ProductoFinanciero {
 
 	@Id
-	@Column(name="cd_app_inversion")
+	@Column(name = "cd_app_inversion")
 	private Integer cdAppInversion;
-	
-	@Column(name="nb_app_inversion")
+
+	@Column(name = "nb_app_inversion")
 	private String nbAppInversion;
 
 	public Integer getCdAppInversion() {

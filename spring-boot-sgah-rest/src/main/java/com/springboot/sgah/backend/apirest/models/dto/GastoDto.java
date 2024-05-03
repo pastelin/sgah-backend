@@ -3,38 +3,34 @@ package com.springboot.sgah.backend.apirest.models.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.validation.constraints.NotNull;
+
 public class GastoDto {
-	private Long id;
 
-	private LocalDate fechaCreacion;
+	private LocalDate fechaCreacion; 
 
+	@NotNull
 	private BigDecimal monto;
 
+	@NotNull
 	private String descripcion;
 
+	@NotNull
 	private GastoRecurrenteDto gastoRecurrente;
 
+	@NotNull
 	private TipoMovimientoDto tipoMovimiento;
 
 	public GastoDto() {
 	}
 
-	public GastoDto(Long id, LocalDate fechaCreacion, BigDecimal monto, String descripcion,
+	public GastoDto(LocalDate fechaCreacion, BigDecimal monto, String descripcion,
 			GastoRecurrenteDto gastoRecurrenteDto, TipoMovimientoDto tipoMovimientoDto) {
-		this.id = id;
 		this.fechaCreacion = fechaCreacion;
 		this.monto = monto;
 		this.descripcion = descripcion;
 		this.gastoRecurrente = gastoRecurrenteDto;
 		this.tipoMovimiento = tipoMovimientoDto;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public LocalDate getFechaCreacion() {

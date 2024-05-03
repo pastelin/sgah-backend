@@ -1,7 +1,6 @@
 package com.springboot.sgah.backend.apirest.services.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springboot.sgah.backend.apirest.models.dao.InversionDao;
 import com.springboot.sgah.backend.apirest.models.dao.ProductoFinancieroDao;
 import com.springboot.sgah.backend.apirest.models.entities.Inversion;
-import com.springboot.sgah.backend.apirest.models.entities.InversionDto;
 import com.springboot.sgah.backend.apirest.models.entities.ProductoFinanciero;
 import com.springboot.sgah.backend.apirest.services.InversionService;
 
@@ -50,8 +48,8 @@ public class InversionServiceImpl implements InversionService {
 
 	@Override
 	@Transactional
-	public Inversion updateInversion(Inversion inversion) {
-		return inversionDao.save(inversion);
+	public void updateInversion(Inversion inversion) {
+		inversionDao.save(inversion);
 
 	}
 
@@ -59,31 +57,6 @@ public class InversionServiceImpl implements InversionService {
 	@Transactional(readOnly = true)
 	public BigDecimal obtenerMontoActual(String folio) {
 		return inversionDao.obtenerMontoActual(folio);
-	}
-
-	@Override
-	public List<InversionDto> updateDescripcionInversion(List<Inversion> inversiones) {
-
-		List<InversionDto> inversionesDto = new ArrayList<>();
-		List<ProductoFinanciero> catalogos = (List<ProductoFinanciero>) catalogoDao.findAll();
-
-		inversiones.stream().forEach(inversion -> {
-
-			InversionDto inversionDto = new InversionDto(inversion);
-
-			catalogos.stream().forEach(catalogo -> {
-
-				if (inversion.getCdAppInversion().equals(catalogo.getCdAppInversion())) {
-					inversionDto.setNbAppInversion(catalogo.getNbAppInversion());
-					return;
-				}
-
-			});
-
-			inversionesDto.add(inversionDto);
-		});
-
-		return inversionesDto;
 	}
 
 	@Override

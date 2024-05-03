@@ -56,7 +56,7 @@ public class DtoMapperGasto {
 		tipoMovimientoDto.setCdTipo(gasto.getCdTipoMovimiento());
 		tipoMovimientoDto.setNbTipo((gasto.getCdTipoMovimiento() == 1) ? "Ingreso" : "Gasto");
 
-		return new GastoDto(gasto.getId(), gasto.getFechaCreacion(), gasto.getMonto(), gasto.getDescripcion(),
+		return new GastoDto(gasto.getFechaCreacion(), gasto.getMonto(), gasto.getDescripcion(),
 				gastoRecurrenteDto, tipoMovimientoDto);
 	}
 

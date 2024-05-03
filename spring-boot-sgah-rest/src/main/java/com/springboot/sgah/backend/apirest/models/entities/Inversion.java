@@ -3,7 +3,6 @@ package com.springboot.sgah.backend.apirest.models.entities;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,12 +46,8 @@ public class Inversion implements Serializable {
 	@NotNull
 	@Column(name = "cd_app_inversion")
 	private Integer cdAppInversion;
-	
-	
 
 	public Inversion() {
-		this.folio = Long.toString(new Date().getTime());
-		this.fechaCreacion = LocalDate.now();
 		this.cdEstatus = 1;
 	}
 

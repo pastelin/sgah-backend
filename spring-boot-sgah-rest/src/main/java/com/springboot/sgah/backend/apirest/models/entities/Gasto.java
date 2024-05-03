@@ -14,7 +14,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="gastos")
+@Table(name = "gastos")
 public class Gasto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -22,31 +22,29 @@ public class Gasto implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@NotNull
-	@Column(name="fecha_creacion")
+	@Column(name = "fecha_creacion")
 	private LocalDate fechaCreacion;
-	
+
 	@NotNull
 	private BigDecimal monto;
-	
+
 	@NotEmpty
 	private String descripcion;
-	
+
 	@NotNull
-	@Column(name="cd_gasto_recurrente")
+	@Column(name = "cd_gasto_recurrente")
 	private Integer cdGastoRecurrente;
-	
+
 	@NotNull
-	@Column(name="cd_estatus")
+	@Column(name = "cd_estatus")
 	private Integer cdEstatus;
-	
+
 	@NotNull
-	@Column(name="cd_tipo_movimiento_gasto")
+	@Column(name = "cd_tipo_movimiento_gasto")
 	private Integer cdTipoMovimiento;
 
-	
-	
 	public Gasto() {
 		this.fechaCreacion = LocalDate.now();
 		this.cdEstatus = 1;
@@ -107,5 +105,5 @@ public class Gasto implements Serializable {
 	public void setCdTipoMovimiento(Integer cdTipoMovimiento) {
 		this.cdTipoMovimiento = cdTipoMovimiento;
 	}
-	
+
 }
