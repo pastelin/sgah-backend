@@ -50,6 +50,16 @@ public class Gasto implements Serializable {
 		this.cdEstatus = 1;
 	}
 
+	public Gasto(BigDecimal monto, String descripcion, Integer cdGastoRecurrente,
+			Integer cdTipoMovimiento) {
+		this.monto = monto;
+		this.descripcion = descripcion;
+		this.cdGastoRecurrente = cdGastoRecurrente;
+		this.cdTipoMovimiento = cdTipoMovimiento;
+		this.fechaCreacion = LocalDate.now();
+		this.cdEstatus = 1;
+	}
+
 	public Long getId() {
 		return id;
 	}

@@ -31,14 +31,14 @@ public class PrestamoServiceImpl implements PrestamoService {
 
 	@Override
 	@Transactional
-	public Prestamo agregarPrestamo(Prestamo prestamo) {
-		return prestamoDao.save(prestamo);
+	public void agregarPrestamo(Prestamo prestamo) {
+		prestamoDao.save(prestamo);
 	}
 
 	@Override
 	@Transactional
-	public Prestamo actualizarPrestamo(Prestamo prestamo) {
-		return prestamoDao.save(prestamo);
+	public void actualizarPrestamo(Prestamo prestamo) {
+		prestamoDao.save(prestamo);
 	}
 
 	@Override

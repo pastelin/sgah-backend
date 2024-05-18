@@ -35,7 +35,7 @@ import com.springboot.sgah.backend.apirest.services.GastoService;
 @CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController
 @RequestMapping("/sgah/v0/gasto")
-public class GastoRestController {
+public class GastoRestController { 
 
 	@Autowired
 	GastoService gastoService;

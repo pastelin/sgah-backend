@@ -11,9 +11,9 @@ public interface PrestamoService {
 	
 	List<Prestamo> listarPrestamoActivo();
 	
-	Prestamo agregarPrestamo(Prestamo prestamo);
+	void agregarPrestamo(Prestamo prestamo);
 	
-	Prestamo actualizarPrestamo(Prestamo prestamo);
+	void actualizarPrestamo(Prestamo prestamo);
 	
 	BigDecimal calcularPrestamo();
 	

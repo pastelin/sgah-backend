@@ -4,6 +4,7 @@ import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_MENSAJE;
 import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_PRESTAMO;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.sgah.backend.apirest.models.dto.PrestamoDto;
+import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperPrestamo;
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
 import com.springboot.sgah.backend.apirest.models.entities.Prestamo;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
@@ -49,20 +52,20 @@ public class PrestamoRestController {
 	public ResponseEntity<Map<String, Object>> listarPrestamoActivo() {
 
 		Map<String, Object> response = new HashMap<>();
-		List<Prestamo> prestamos = null;
+		List<PrestamoDto> prestamosDto = new ArrayList<>();
 
 		try {
-			prestamos = prestamoService.listarPrestamoActivo();
+			List<Prestamo> prestamos = prestamoService.listarPrestamoActivo();
+
+			for (Prestamo prestamo : prestamos) {
+				prestamosDto.add(DtoMapperPrestamo.builder().setPrestamo(prestamo).buildPrestamoDto());
+			}
+
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		if (prestamos == null || prestamos.isEmpty()) {
-			response.put(TEXT_MENSAJE, "No hay información de prestamos");
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-
-		response.put("prestamos", prestamos);
+		response.put("prestamos", prestamosDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -70,20 +73,16 @@ public class PrestamoRestController {
 	public ResponseEntity<Map<String, Object>> obtenerPrestamoByFolio(@PathVariable String folio) {
 
 		Map<String, Object> response = new HashMap<>();
-		Prestamo prestamo = null;
+		PrestamoDto prestamoDto = null;
 
 		try {
-			prestamo = prestamoService.obtenerPrestamo(folio);
+			prestamoDto = DtoMapperPrestamo.builder().setPrestamo(prestamoService.obtenerPrestamo(folio))
+					.buildPrestamoDto();
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		if (prestamo == null) {
-			response.put(TEXT_MENSAJE, "No hay información del prestamo.");
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-
-		response.put(TEXT_PRESTAMO, prestamo);
+		response.put(TEXT_PRESTAMO, prestamoDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -103,13 +102,11 @@ public class PrestamoRestController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	// TODO: Analizar si se puede refactorizar este método (Reglas de negocio)
 	@PostMapping("/")
-	public ResponseEntity<Map<String, Object>> agregarPrestamo(@Valid @RequestBody Prestamo prestamo,
+	public ResponseEntity<Map<String, Object>> agregarPrestamo(@Valid @RequestBody PrestamoDto prestamo,
 			BindingResult result) {
 
 		Map<String, Object> response = new HashMap<>();
-		Prestamo prestamoSaved = null;
 
 		if (result.hasErrors()) {
 			return new ResponseEntity<>(ErrorMessageUtil.getFieldsErrorMessage(result), HttpStatus.BAD_REQUEST);
@@ -123,36 +120,32 @@ public class PrestamoRestController {
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			}
 
-			if (prestamo.getMontoPrestado().compareTo(saldoAhorrado) >= 1) {
+			if (prestamo.getSaldoPrestado().compareTo(saldoAhorrado) >= 1) {
 				response.put(TEXT_MENSAJE, "El monto no debe ser mayor a $" + saldoAhorrado);
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
 
-			prestamoSaved = prestamoService.agregarPrestamo(prestamo);
+			prestamoService.agregarPrestamo(DtoMapperPrestamo.builder().setPrestamoDto(prestamo)
+					.buildPrestamo());
 
-			// TODO: Refactorizar para que lo ejecute la capa de GASTO
-			Gasto gasto = new Gasto();
-			gasto.setCdTipoMovimiento(1);
-			gasto.setDescripcion(prestamo.getDescripcion());
-			gasto.setMonto(prestamo.getMontoPrestado());
-			gasto.setCdGastoRecurrente(11);
-
-			gastoService.saveGasto(gasto);
+			gastoService.saveGasto(new Gasto(prestamo.getSaldoPrestado(), prestamo.getDescripcion(), 11, 1));
 		} catch (DataException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		response.put(TEXT_MENSAJE, "Prestamo guardado con éxito!");
-		response.put(TEXT_PRESTAMO, prestamoSaved);
+		response.put("folio", prestamo.getFolio());
+		response.put("fechaCreacion", prestamo.getFechaCreacion());
+		response.put("saldoPagado", prestamo.getSaldoPagado());
+		response.put("cdEstatus", prestamo.getCdEstatus());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PutMapping("/")
-	public ResponseEntity<Map<String, Object>> actualizarPrestamo(@Valid @RequestBody Prestamo prestamo,
+	public ResponseEntity<Map<String, Object>> actualizarPrestamo(@Valid @RequestBody PrestamoDto prestamo,
 			BindingResult result) {
 
 		Map<String, Object> response = new HashMap<>();
-		Prestamo prestamoUpdated = null;
 
 		if (result.hasErrors()) {
 			return new ResponseEntity<>(ErrorMessageUtil.getFieldsErrorMessage(result), HttpStatus.BAD_REQUEST);
@@ -171,33 +164,33 @@ public class PrestamoRestController {
 			BigDecimal saldoDeuda = saldoPrestado.subtract(saldoPagado);
 			BigDecimal saldoDisponibleGasto = gastoService.calcularMontoDisponible();
 
-			if (prestamo.getMontoPagado().compareTo(saldoDeuda) >= 1
-					|| prestamo.getMontoPagado().compareTo(saldoDisponibleGasto) >= 1) {
+			if (prestamo.getSaldoPagado().compareTo(saldoDeuda) >= 1
+					|| prestamo.getSaldoPagado().compareTo(saldoDisponibleGasto) >= 1) {
 				response.put(TEXT_MENSAJE, "El monto no debe ser mayor a la deuda actual o saldo disponible.");
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
 
-			Gasto gasto = new Gasto();
-			gasto.setCdTipoMovimiento(2);
-			gasto.setMonto(prestamo.getMontoPagado());
-			gasto.setCdGastoRecurrente(11);
-			gasto.setDescripcion(prestamo.getDescripcion());
 
-			prestamo.setMontoPagado(prestamo.getMontoPagado().add(saldoPagado));
-
-			if (saldoPrestado.compareTo(prestamo.getMontoPagado()) == 0) {
+			BigDecimal currentSaldoPagado = prestamo.getSaldoPagado().add(saldoPagado);
+			
+			if (saldoPrestado.compareTo(currentSaldoPagado) == 0) {
 				prestamo.setCdEstatus(2);
 			}
 
-			prestamoUpdated = prestamoService.actualizarPrestamo(prestamo);
-			gastoService.saveGasto(gasto);
+			gastoService.saveGasto(new Gasto(prestamo.getSaldoPagado(), prestamo.getDescripcion(), 11, 2));
+			
+			prestamo.setSaldoPagado(currentSaldoPagado);
+			prestamoService.actualizarPrestamo(DtoMapperPrestamo.builder().setPrestamoDto(prestamo)
+					.buildPrestamo());
+
 
 		} catch (DataException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		response.put(TEXT_MENSAJE, "Prestamo actualizado con éxito!");
-		response.put(TEXT_PRESTAMO, prestamoUpdated);
+		response.put("saldoPagado", prestamo.getSaldoPagado());
+		response.put("cdEstatus", prestamo.getCdEstatus());
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
