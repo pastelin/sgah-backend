@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,8 @@ import com.springboot.sgah.backend.apirest.models.entities.Inversion;
 import com.springboot.sgah.backend.apirest.models.entities.ProductoFinanciero;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.InversionService;
+
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController

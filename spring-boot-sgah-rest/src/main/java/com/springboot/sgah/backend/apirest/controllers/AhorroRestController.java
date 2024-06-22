@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -28,6 +26,8 @@ import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperAhorro;
 import com.springboot.sgah.backend.apirest.models.entities.Ahorro;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
+
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController

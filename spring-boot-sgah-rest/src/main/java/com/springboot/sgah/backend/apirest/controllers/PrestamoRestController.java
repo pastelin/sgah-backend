@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,8 @@ import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
 import com.springboot.sgah.backend.apirest.services.GastoService;
 import com.springboot.sgah.backend.apirest.services.PrestamoService;
+
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController

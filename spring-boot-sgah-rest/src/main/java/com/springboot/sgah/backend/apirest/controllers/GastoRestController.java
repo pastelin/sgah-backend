@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -32,6 +31,8 @@ import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
 import com.springboot.sgah.backend.apirest.services.GastoService;
+
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = { "http://localhost:5173/" })
 @RestController
