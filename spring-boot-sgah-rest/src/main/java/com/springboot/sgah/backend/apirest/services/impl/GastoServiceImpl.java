@@ -24,7 +24,7 @@ public class GastoServiceImpl implements GastoService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Gasto> findGastoByCurrentMonth(int month, int year) {
+	public List<Gasto> findGastoByMonth(int month, int year) {
 		return gastoDao.findGastoByCurrentMonth(month, year);
 	}
 
@@ -70,6 +70,12 @@ public class GastoServiceImpl implements GastoService {
 	@Transactional(readOnly = true)
 	public List<GastoRecurrente> findAllGastoRecurrente() {
 		return (List<GastoRecurrente>) gastoRecurrenteDao.findAll();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Gasto> findGastoByYear(int year) {
+		return gastoDao.findGastoByYear(year);
 	}
 
 }

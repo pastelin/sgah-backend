@@ -28,4 +28,7 @@ public interface GastoDao extends CrudRepository<Gasto, Long> {
 	@Query(value = "select sum(monto) from gastos where cd_tipo_movimiento_gasto = 2 and cd_estatus = 1 and cd_gasto_recurrente <> 11 and month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)
 	BigDecimal obtenerGastoMensual(int month, int year);
 
+	@Query(value = "select * from gastos where cd_tipo_movimiento_gasto = 2 and cd_estatus = 1 and cd_gasto_recurrente <> 11 and year(fecha_creacion) = ?1", nativeQuery = true)
+	List<Gasto> findGastoByYear(Integer value);
+
 }
