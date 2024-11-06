@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.sgah.backend.apirest.models.dto.GastoDto;
 import com.springboot.sgah.backend.apirest.models.dto.GastoRecurrenteDto;
+import com.springboot.sgah.backend.apirest.models.dto.HistoricalBalanceByMonth;
+import com.springboot.sgah.backend.apirest.models.dto.HistoricalBalanceByYear;
 import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperGasto;
 import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperGastoRecurrente;
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
@@ -43,22 +44,18 @@ public class GastoRestController {
 	GastoService gastoService;
 
 	@GetMapping("/{year}")
-	public ResponseEntity<Map<String, Object>> findGastoByYear(@PathVariable Integer year) {
+	public ResponseEntity<Map<String, Object>> findHistoricalBalanceByYear(@PathVariable Integer year) {
 		Map<String, Object> response = new HashMap<>();
-		List<GastoDto> gastosDto = new ArrayList<>();
+		List<HistoricalBalanceByYear> historicalBalance = new ArrayList<>();
 
 		try {
-			List<Gasto> gastos = gastoService.findGastoByYear(year);
+			historicalBalance = gastoService.findHistoricalBalanceByYear(year);
 
-			for (Gasto gasto : gastos) {
-				gastosDto.add(
-						DtoMapperGasto.builder().setGasto(gasto).buildGastoDto(gastoService.findAllGastoRecurrente()));
-			}
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		response.put("gastos", gastosDto);
+		response.put("historicalBalance", historicalBalance);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -83,6 +80,23 @@ public class GastoRestController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+	@GetMapping("/historical/{year}/{month}")
+	public ResponseEntity<Map<String, Object>> findHistoricalBalanceByMonth(@PathVariable Integer year,
+			@PathVariable Integer month) {
+		Map<String, Object> response = new HashMap<>();
+		List<HistoricalBalanceByMonth> historicalBalance = new ArrayList<>();
+
+		try {
+			historicalBalance = gastoService.findHistoricalBalanceByMonth(month, year);
+
+		} catch (DataAccessException e) {
+			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("historicalBalance", historicalBalance);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 	@GetMapping("/montos")
 	public ResponseEntity<Map<String, Object>> obtenerMontos() {
 
@@ -93,7 +107,8 @@ public class GastoRestController {
 		try {
 
 			montoDisponible = gastoService.calcularMontoDisponible();
-			montoGastado = gastoService.obtenerGastoMensual(LocalDateUtil.getMonth(null), LocalDateUtil.getYear(null));
+			montoGastado = gastoService.calculateExpensesByMonthAndYear(LocalDateUtil.getMonth(null),
+					LocalDateUtil.getYear(null));
 
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
