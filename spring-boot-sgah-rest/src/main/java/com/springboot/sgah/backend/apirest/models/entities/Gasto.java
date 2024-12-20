@@ -6,9 +6,12 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -34,30 +37,26 @@ public class Gasto implements Serializable {
 	private String descripcion;
 
 	@NotNull
-	@Column(name = "cd_gasto_recurrente")
-	private Integer cdGastoRecurrente;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "cd_gasto_recurrente")
+	private GastoRecurrente gastoRecurrente;
 
 	@NotNull
-	@Column(name = "cd_estatus")
-	private Integer cdEstatus;
-
-	@NotNull
-	@Column(name = "cd_tipo_movimiento_gasto")
-	private Integer cdTipoMovimiento;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "cd_origen_movimiento")
+	private OrigenMovimiento origenMovimiento;
 
 	public Gasto() {
 		this.fechaCreacion = LocalDate.now();
-		this.cdEstatus = 1;
 	}
 
-	public Gasto(BigDecimal monto, String descripcion, Integer cdGastoRecurrente,
-			Integer cdTipoMovimiento) {
+	public Gasto(BigDecimal monto, String descripcion, GastoRecurrente gastoRecurrente,
+			OrigenMovimiento origenMovimiento) {
 		this.monto = monto;
 		this.descripcion = descripcion;
-		this.cdGastoRecurrente = cdGastoRecurrente;
-		this.cdTipoMovimiento = cdTipoMovimiento;
+		this.gastoRecurrente = gastoRecurrente;
+		this.origenMovimiento = origenMovimiento;
 		this.fechaCreacion = LocalDate.now();
-		this.cdEstatus = 1;
 	}
 
 	public Long getId() {
@@ -92,28 +91,20 @@ public class Gasto implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-	public Integer getCdGastoRecurrente() {
-		return cdGastoRecurrente;
+	public GastoRecurrente getGastoRecurrente() {
+		return gastoRecurrente;
 	}
 
-	public void setCdGastoRecurrente(Integer cdGastoRecurrente) {
-		this.cdGastoRecurrente = cdGastoRecurrente;
+	public void setGastoRecurrente(GastoRecurrente gastoRecurrente) {
+		this.gastoRecurrente = gastoRecurrente;
 	}
 
-	public Integer getCdEstatus() {
-		return cdEstatus;
+	public OrigenMovimiento getOrigenMovimiento() {
+		return origenMovimiento;
 	}
 
-	public void setCdEstatus(Integer cdEstatus) {
-		this.cdEstatus = cdEstatus;
-	}
-
-	public Integer getCdTipoMovimiento() {
-		return cdTipoMovimiento;
-	}
-
-	public void setCdTipoMovimiento(Integer cdTipoMovimiento) {
-		this.cdTipoMovimiento = cdTipoMovimiento;
+	public void setCdTipoMovimiento(OrigenMovimiento origenMovimiento) {
+		this.origenMovimiento = origenMovimiento;
 	}
 
 }

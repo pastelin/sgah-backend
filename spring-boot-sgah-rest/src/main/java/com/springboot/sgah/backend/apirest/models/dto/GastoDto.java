@@ -19,18 +19,18 @@ public class GastoDto {
 	private GastoRecurrenteDto gastoRecurrente;
 
 	@NotNull
-	private TipoMovimientoDto tipoMovimiento;
+	private OrigenMovimientoDto origenMovimiento;
 
 	public GastoDto() {
 	}
 
 	public GastoDto(LocalDate fechaCreacion, BigDecimal monto, String descripcion,
-			GastoRecurrenteDto gastoRecurrenteDto, TipoMovimientoDto tipoMovimientoDto) {
+			GastoRecurrenteDto gastoRecurrenteDto, OrigenMovimientoDto origenMovimiento) {
 		this.fechaCreacion = fechaCreacion;
 		this.monto = monto;
 		this.descripcion = descripcion;
 		this.gastoRecurrente = gastoRecurrenteDto;
-		this.tipoMovimiento = tipoMovimientoDto;
+		this.origenMovimiento = origenMovimiento;
 	}
 
 	public LocalDate getFechaCreacion() {
@@ -57,12 +57,12 @@ public class GastoDto {
 		this.gastoRecurrente = gastoRecurrenteDto;
 	}
 
-	public TipoMovimientoDto getTipoMovimiento() {
-		return tipoMovimiento;
+	public OrigenMovimientoDto getOrigenMovimiento() {
+		return origenMovimiento;
 	}
 
-	public void setTipoMovimiento(TipoMovimientoDto tipoMovimientoDto) {
-		this.tipoMovimiento = tipoMovimientoDto;
+	public void setOrigenMovimiento(OrigenMovimientoDto origenMovimiento) {
+		this.origenMovimiento = origenMovimiento;
 	}
 
 	public BigDecimal getMonto() {

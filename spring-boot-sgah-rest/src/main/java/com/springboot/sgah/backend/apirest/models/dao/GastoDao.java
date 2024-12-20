@@ -10,28 +10,19 @@ import com.springboot.sgah.backend.apirest.models.entities.Gasto;
 
 public interface GastoDao extends CrudRepository<Gasto, Long> {
 
-	@Query(value = "select * from gastos where cd_estatus = 1 and month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)
+	@Query(value = "select g from Gasto g left join fetch g.gastoRecurrente left join fetch g.origenMovimiento where month(g.fechaCreacion) = ?1 and year(g.fechaCreacion) = ?2")
 	List<Gasto> findGastoByCurrentMonth(int month, int year);
 
-	@Query(value = "select * from gastos where cd_gasto_recurrente = ?1", nativeQuery = true)
-	List<Gasto> findGastoByCategoria(Integer value);
-
-	@Query(value = "select * from gastos where cd_tipo_movimiento_gasto = ?1", nativeQuery = true)
-	List<Gasto> findGastoByTipo(Integer value);
-
-	@Query(value = "select SUM(monto) from gastos where cd_estatus = 1 and cd_tipo_movimiento_gasto = 1", nativeQuery = true)
+	@Query(value = "select SUM(monto) from gastos where cd_origen_movimiento = 1", nativeQuery = true)
 	BigDecimal obtenerTotalIngreso();
 
-	@Query(value = "select SUM(monto) from gastos where cd_estatus = 1 and cd_tipo_movimiento_gasto = 2", nativeQuery = true)
+	@Query(value = "select SUM(monto) from gastos where cd_origen_movimiento = 2", nativeQuery = true)
 	BigDecimal obtenerTotalGastado();
 
-	@Query(value = "select sum(monto) from gastos where cd_tipo_movimiento_gasto = 2 and cd_estatus = 1 and month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)
+	@Query(value = "select sum(monto) from gastos where cd_origen_movimiento = 2 and month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)
 	BigDecimal calculateExpensesByMonthAndYear(int month, int year);
 
-	@Query(value = "select sum(monto) from gastos where cd_tipo_movimiento_gasto = 1 and cd_estatus = 1 and month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)
+	@Query(value = "select sum(monto) from gastos where cd_origen_movimiento = 1 and month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)
 	BigDecimal calculateRevenuePerMonthAndYear(int month, int year);
-
-	@Query(value = "select * from gastos where cd_tipo_movimiento_gasto = 2 and cd_estatus = 1 and cd_gasto_recurrente <> 11 and year(fecha_creacion) = ?1", nativeQuery = true)
-	List<Gasto> findGastoByYear(Integer value);
 
 }

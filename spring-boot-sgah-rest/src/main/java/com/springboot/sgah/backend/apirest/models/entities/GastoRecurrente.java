@@ -1,6 +1,6 @@
 package com.springboot.sgah.backend.apirest.models.entities;
 
-import java.math.BigDecimal;
+import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "gastos_recurrentes")
-public class GastoRecurrente {
+@Table(name = "catalogo_gastos_recurrentes")
+public class GastoRecurrente implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id 
 	@Column(name = "cd_gasto")
@@ -21,10 +23,13 @@ public class GastoRecurrente {
 	@Column(name = "nb_gasto")
 	private String nbGasto;
 
-	@Column(name = "cd_estatus")
-	private Integer cdEstatus;
+	public GastoRecurrente() {
+	}
 
-	private BigDecimal monto;
+	public GastoRecurrente(Integer cdGasto, String nbGasto) {
+		this.cdGasto = cdGasto;
+		this.nbGasto = nbGasto;
+	}
 
 	public Integer getCdGasto() {
 		return cdGasto;
@@ -40,22 +45,6 @@ public class GastoRecurrente {
 
 	public void setNbGasto(String nbGasto) {
 		this.nbGasto = nbGasto;
-	}
-
-	public Integer getCdEstatus() {
-		return cdEstatus;
-	}
-
-	public void setCdEstatus(Integer cdEstatus) {
-		this.cdEstatus = cdEstatus;
-	}
-
-	public BigDecimal getMonto() {
-		return monto;
-	}
-
-	public void setMonto(BigDecimal monto) {
-		this.monto = monto;
 	}
 
 }

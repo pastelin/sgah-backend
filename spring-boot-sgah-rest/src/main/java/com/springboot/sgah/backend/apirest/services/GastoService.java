@@ -2,25 +2,21 @@ package com.springboot.sgah.backend.apirest.services;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import com.springboot.sgah.backend.apirest.models.dto.HistoricalBalanceByMonth;
 import com.springboot.sgah.backend.apirest.models.dto.HistoricalBalanceByYear;
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
 import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
+import com.springboot.sgah.backend.apirest.models.entities.OrigenMovimiento;
 
 public interface GastoService {
 
 	List<Gasto> findGastoByMonth(int month, int year);
-	
+
 	List<HistoricalBalanceByMonth> findHistoricalBalanceByMonth(int month, int year);
 
-	List<Gasto> findGastoByYear(int year);
-
-	List<Gasto> findGastoByCategoria(Integer value);
-
 	List<Gasto> findAllGasto();
-
-	List<Gasto> findGastoByTipo(Integer value);
 
 	List<GastoRecurrente> findAllGastoRecurrente();
 
@@ -31,5 +27,9 @@ public interface GastoService {
 	BigDecimal calcularMontoDisponible();
 
 	List<HistoricalBalanceByYear> findHistoricalBalanceByYear(int year);
+
+	Optional<GastoRecurrente> findGastoRecurrenteById(Integer id);
+
+	Optional<OrigenMovimiento> findOrigenMovimientoById(Integer id);
 
 }

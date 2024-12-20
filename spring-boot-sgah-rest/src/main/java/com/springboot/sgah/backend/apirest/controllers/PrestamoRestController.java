@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springboot.sgah.backend.apirest.models.dto.PrestamoDto;
 import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperPrestamo;
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
+import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
+import com.springboot.sgah.backend.apirest.models.entities.OrigenMovimiento;
 import com.springboot.sgah.backend.apirest.models.entities.Prestamo;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.services.AhorroService;
@@ -40,14 +43,20 @@ import jakarta.validation.Valid;
 @RequestMapping("/sgah/v0/prestamo")
 public class PrestamoRestController {
 
-	@Autowired
 	PrestamoService prestamoService;
-
-	@Autowired
 	AhorroService ahorroService;
+	GastoService gastoService;
+
+	public PrestamoRestController() {
+	}
 
 	@Autowired
-	GastoService gastoService;
+	public PrestamoRestController(PrestamoService prestamoService, AhorroService ahorroService,
+			GastoService gastoService) {
+		this.prestamoService = prestamoService;
+		this.ahorroService = ahorroService;
+		this.gastoService = gastoService;
+	}
 
 	@GetMapping("/")
 	public ResponseEntity<Map<String, Object>> listarPrestamoActivo() {
@@ -129,7 +138,16 @@ public class PrestamoRestController {
 			prestamoService.agregarPrestamo(DtoMapperPrestamo.builder().setPrestamoDto(prestamo)
 					.buildPrestamo());
 
-			gastoService.saveGasto(new Gasto(prestamo.getSaldoPrestado(), prestamo.getDescripcion(), 11, 1));
+			Optional<GastoRecurrente> gastoRecurrente = gastoService
+					.findGastoRecurrenteById(18);
+
+			Optional<OrigenMovimiento> origenMovimiento = gastoService
+					.findOrigenMovimientoById(1);
+
+			gastoService.saveGasto(
+					new Gasto(prestamo.getSaldoPrestado(), prestamo.getDescripcion(), gastoRecurrente.get(),
+							origenMovimiento.get()));
+
 		} catch (DataException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -171,19 +189,24 @@ public class PrestamoRestController {
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
 
-
 			BigDecimal currentSaldoPagado = prestamo.getSaldoPagado().add(saldoPagado);
-			
+
 			if (saldoPrestado.compareTo(currentSaldoPagado) == 0) {
 				prestamo.setCdEstatus(2);
 			}
 
-			gastoService.saveGasto(new Gasto(prestamo.getSaldoPagado(), prestamo.getDescripcion(), 11, 2));
-			
+			Optional<GastoRecurrente> gastoRecurrente = gastoService
+					.findGastoRecurrenteById(11);
+
+			Optional<OrigenMovimiento> origenMovimiento = gastoService
+					.findOrigenMovimientoById(2);
+
+			gastoService.saveGasto(new Gasto(prestamo.getSaldoPagado(),
+					prestamo.getDescripcion(), gastoRecurrente.get(), origenMovimiento.get()));
+
 			prestamo.setSaldoPagado(currentSaldoPagado);
 			prestamoService.actualizarPrestamo(DtoMapperPrestamo.builder().setPrestamoDto(prestamo)
 					.buildPrestamo());
-
 
 		} catch (DataException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);

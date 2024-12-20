@@ -1,12 +1,11 @@
 package com.springboot.sgah.backend.apirest.models.dto.mapper;
 
-import java.util.List;
-
 import com.springboot.sgah.backend.apirest.models.dto.GastoDto;
 import com.springboot.sgah.backend.apirest.models.dto.GastoRecurrenteDto;
-import com.springboot.sgah.backend.apirest.models.dto.TipoMovimientoDto;
+import com.springboot.sgah.backend.apirest.models.dto.OrigenMovimientoDto;
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
 import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
+import com.springboot.sgah.backend.apirest.models.entities.OrigenMovimiento;
 
 public class DtoMapperGasto {
 
@@ -30,37 +29,31 @@ public class DtoMapperGasto {
 		return this;
 	}
 
-	private GastoRecurrenteDto buildGastoRecurrenteDto(List<GastoRecurrente> gastosRecurrentes, Integer id) {
-		GastoRecurrenteDto gastoRecurrenteDto = null;
-
-		for (GastoRecurrente gastoRecurrente : gastosRecurrentes) {
-			if (gastoRecurrente.getCdGasto().equals(id)) {
-				gastoRecurrenteDto = DtoMapperGastoRecurrente.builder().setGastoRecurrente(gastoRecurrente)
-						.buildGastoRecurrenteDto();
-				break;
-			}
-		}
-
-		return gastoRecurrenteDto;
-	}
-
-	public GastoDto buildGastoDto(List<GastoRecurrente> gastosRecurrentes) {
+	public GastoDto buildGastoDto() {
 		if (gasto == null) {
 			throw new NullPointerException("Debe pasar el entity Gasto!");
 		}
 
-		GastoRecurrenteDto gastoRecurrenteDto = buildGastoRecurrenteDto(gastosRecurrentes,
-				gasto.getCdGastoRecurrente());
+		OrigenMovimientoDto origenMovimiento = null;
+		GastoRecurrenteDto gastoRecurrenteDto = null;
 
-		TipoMovimientoDto tipoMovimientoDto = new TipoMovimientoDto();
-		tipoMovimientoDto.setCdTipo(gasto.getCdTipoMovimiento());
-		tipoMovimientoDto.setNbTipo((gasto.getCdTipoMovimiento() == 1) ? "Ingreso" : "Gasto");
+		if (gasto.getOrigenMovimiento() != null) {
+			origenMovimiento = new OrigenMovimientoDto(gasto.getOrigenMovimiento().getId(),
+					gasto.getOrigenMovimiento().getDescripcion());
+
+		}
+
+		if (gasto.getGastoRecurrente() != null) {
+			gastoRecurrenteDto = new GastoRecurrenteDto(gasto.getGastoRecurrente().getCdGasto(),
+					gasto.getGastoRecurrente().getNbGasto());
+
+		}
 
 		return new GastoDto(gasto.getFechaCreacion(), gasto.getMonto(), gasto.getDescripcion(),
-				gastoRecurrenteDto, tipoMovimientoDto);
+				gastoRecurrenteDto, origenMovimiento);
 	}
 
-	public Gasto buiGasto() {
+	public Gasto buiGasto(GastoRecurrente gastoRecurrente, OrigenMovimiento origenMovimiento) {
 		if (gastoDto == null) {
 			throw new NullPointerException("Debe pasar el dto Gasto!");
 		}
@@ -68,8 +61,8 @@ public class DtoMapperGasto {
 		gasto = new Gasto();
 		gasto.setMonto(gastoDto.getMonto());
 		gasto.setDescripcion(gastoDto.getDescripcion());
-		gasto.setCdGastoRecurrente(gastoDto.getGastoRecurrente().getCdGasto());
-		gasto.setCdTipoMovimiento(gastoDto.getTipoMovimiento().getCdTipo());
+		gasto.setGastoRecurrente(gastoRecurrente);
+		gasto.setCdTipoMovimiento(origenMovimiento);
 
 		return gasto;
 	}

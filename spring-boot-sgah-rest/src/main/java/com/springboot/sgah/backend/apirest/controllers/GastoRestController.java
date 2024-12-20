@@ -3,10 +3,11 @@ package com.springboot.sgah.backend.apirest.controllers;
 import static com.springboot.sgah.backend.apirest.rm.Constants.TEXT_MENSAJE;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -29,6 +30,7 @@ import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperGasto;
 import com.springboot.sgah.backend.apirest.models.dto.mapper.DtoMapperGastoRecurrente;
 import com.springboot.sgah.backend.apirest.models.entities.Gasto;
 import com.springboot.sgah.backend.apirest.models.entities.GastoRecurrente;
+import com.springboot.sgah.backend.apirest.models.entities.OrigenMovimiento;
 import com.springboot.sgah.backend.apirest.rm.ErrorMessageUtil;
 import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
 import com.springboot.sgah.backend.apirest.services.GastoService;
@@ -40,89 +42,76 @@ import jakarta.validation.Valid;
 @RequestMapping("/sgah/v0/gasto")
 public class GastoRestController {
 
-	@Autowired
 	GastoService gastoService;
+
+	public GastoRestController() {
+	}
+
+	@Autowired
+	public GastoRestController(GastoService gastoService) {
+		this.gastoService = gastoService;
+	}
 
 	@GetMapping("/{year}")
 	public ResponseEntity<Map<String, Object>> findHistoricalBalanceByYear(@PathVariable Integer year) {
-		Map<String, Object> response = new HashMap<>();
-		List<HistoricalBalanceByYear> historicalBalance = new ArrayList<>();
-
 		try {
-			historicalBalance = gastoService.findHistoricalBalanceByYear(year);
-
+			List<HistoricalBalanceByYear> historicalBalance = gastoService.findHistoricalBalanceByYear(year);
+			Map<String, Object> response = Collections.singletonMap("historicalBalance", historicalBalance);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		response.put("historicalBalance", historicalBalance);
-		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/{year}/{month}")
 	public ResponseEntity<Map<String, Object>> findGastoByMonth(@PathVariable Integer year,
 			@PathVariable Integer month) {
-		Map<String, Object> response = new HashMap<>();
-		List<GastoDto> gastosDto = new ArrayList<>();
-
 		try {
 			List<Gasto> gastos = gastoService.findGastoByMonth(month, year);
+			List<GastoDto> gastosDto = gastos.stream()
+					.map(gasto -> DtoMapperGasto.builder().setGasto(gasto).buildGastoDto())
+					.toList();
 
-			for (Gasto gasto : gastos) {
-				gastosDto.add(
-						DtoMapperGasto.builder().setGasto(gasto).buildGastoDto(gastoService.findAllGastoRecurrente()));
-			}
+			Map<String, Object> response = Collections.singletonMap("gastos", gastosDto);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		response.put("gastos", gastosDto);
-		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/historical/{year}/{month}")
 	public ResponseEntity<Map<String, Object>> findHistoricalBalanceByMonth(@PathVariable Integer year,
 			@PathVariable Integer month) {
-		Map<String, Object> response = new HashMap<>();
-		List<HistoricalBalanceByMonth> historicalBalance = new ArrayList<>();
-
 		try {
-			historicalBalance = gastoService.findHistoricalBalanceByMonth(month, year);
-
+			List<HistoricalBalanceByMonth> historicalBalance = gastoService.findHistoricalBalanceByMonth(month, year);
+			Map<String, Object> response = Collections.singletonMap("historicalBalance", historicalBalance);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		response.put("historicalBalance", historicalBalance);
-		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/montos")
 	public ResponseEntity<Map<String, Object>> obtenerMontos() {
-
 		Map<String, Object> response = new HashMap<>();
-		BigDecimal montoDisponible = null;
-		BigDecimal montoGastado = null;
 
 		try {
-
-			montoDisponible = gastoService.calcularMontoDisponible();
-			montoGastado = gastoService.calculateExpensesByMonthAndYear(LocalDateUtil.getMonth(null),
+			BigDecimal montoDisponible = gastoService.calcularMontoDisponible();
+			BigDecimal montoGastado = gastoService.calculateExpensesByMonthAndYear(LocalDateUtil.getMonth(null),
 					LocalDateUtil.getYear(null));
+
+			if (montoDisponible == null) {
+				response.put(TEXT_MENSAJE, "No hay información para realizar el cálculo");
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			}
+
+			response.put("montoDisponible", montoDisponible);
+			response.put("montoGastado", montoGastado);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		if (montoDisponible == null) {
-			response.put(TEXT_MENSAJE, "No hay información para realiza el calculo");
-			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-		}
-
-		response.put("montoDisponible", montoDisponible);
-		response.put("montoGastado", montoGastado);
-
-		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/")
@@ -135,43 +124,51 @@ public class GastoRestController {
 		}
 
 		try {
+			Optional<GastoRecurrente> gastoRecurrente = gastoService
+					.findGastoRecurrenteById(gasto.getGastoRecurrente().getCdGasto());
+
+			Optional<OrigenMovimiento> origenMovimiento = gastoService
+					.findOrigenMovimientoById(gasto.getOrigenMovimiento().getId());
+
+			if (!gastoRecurrente.isPresent() || !origenMovimiento.isPresent()) {
+				response.put(TEXT_MENSAJE, "No se encontró la categoría del gasto");
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			}
+
 			BigDecimal saldoDisponible = gastoService.calcularMontoDisponible();
 
-			if (gasto.getTipoMovimiento().getCdTipo() == 2 && gasto.getMonto().compareTo(saldoDisponible) >= 1) {
+			if (gasto.getOrigenMovimiento().getId() == 2 && gasto.getMonto().compareTo(saldoDisponible) >= 1) {
 				response.put(TEXT_MENSAJE, "El monto ingresado no debe ser mayor a $ " + saldoDisponible);
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
 
-			gastoService.saveGasto(DtoMapperGasto.builder().setGastoDto(gasto).buiGasto());
+			Gasto gastoEntity = DtoMapperGasto.builder().setGastoDto(gasto).buiGasto(gastoRecurrente.get(),
+					origenMovimiento.get());
+			gastoService.saveGasto(gastoEntity);
+
+			response.put(TEXT_MENSAJE, "Gasto guardado con éxito!");
+			response.put("gasto", DtoMapperGasto.builder().setGasto(gastoEntity).buildGastoDto());
+			return new ResponseEntity<>(response, HttpStatus.OK);
 
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		response.put(TEXT_MENSAJE, "Gasto guardado con éxito!");
-		return new ResponseEntity<>(response, HttpStatus.OK);
-
 	}
 
 	@GetMapping("/categoria")
 	public ResponseEntity<Map<String, Object>> obtenerGastoRecurrente() {
 
-		Map<String, Object> response = new HashMap<>();
-		List<GastoRecurrenteDto> gastosRecurrentesDto = new ArrayList<>();
-
 		try {
 			List<GastoRecurrente> gastosRecurrentes = gastoService.findAllGastoRecurrente();
+			List<GastoRecurrenteDto> gastosRecurrentesDto = gastosRecurrentes.stream()
+					.map(gastoRecurrente -> DtoMapperGastoRecurrente.builder().setGastoRecurrente(gastoRecurrente)
+							.buildGastoRecurrenteDto())
+					.toList();
 
-			for (GastoRecurrente gastoRecurrente : gastosRecurrentes) {
-				gastosRecurrentesDto.add(DtoMapperGastoRecurrente.builder().setGastoRecurrente(gastoRecurrente)
-						.buildGastoRecurrenteDto());
-			}
-
+			Map<String, Object> response = Collections.singletonMap("gastosRecurrentes", gastosRecurrentesDto);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		response.put("gastosRecurrentes", gastosRecurrentesDto);
-		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

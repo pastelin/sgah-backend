@@ -4,12 +4,10 @@ public class GastoRecurrenteDto {
 
 	private Integer cdGasto;
 	private String nbGasto;
-	private Integer cdEstatus;
 
-	public GastoRecurrenteDto(Integer cdGasto, String nbGasto, Integer cdEstatus) {
+	public GastoRecurrenteDto(Integer cdGasto, String nbGasto) {
 		this.cdGasto = cdGasto;
 		this.nbGasto = nbGasto;
-		this.cdEstatus = cdEstatus;
 	}
 
 	public GastoRecurrenteDto() {
@@ -30,13 +28,4 @@ public class GastoRecurrenteDto {
 	public void setNbGasto(String nbGasto) {
 		this.nbGasto = nbGasto;
 	}
-
-	public Integer getCdEstatus() {
-		return cdEstatus;
-	}
-
-	public void setCdEstatus(Integer cdEstatus) {
-		this.cdEstatus = cdEstatus;
-	}
-
 }

@@ -24,8 +24,7 @@ public class DtoMapperGastoRecurrente {
 			throw new NullPointerException("Debe pasar el entity GastoRecurrente!");
 		}
 
-		return new GastoRecurrenteDto(gastoRecurrente.getCdGasto(), gastoRecurrente.getNbGasto(),
-				gastoRecurrente.getCdEstatus());
+		return new GastoRecurrenteDto(gastoRecurrente.getCdGasto(), gastoRecurrente.getNbGasto());
 	}
 
 }

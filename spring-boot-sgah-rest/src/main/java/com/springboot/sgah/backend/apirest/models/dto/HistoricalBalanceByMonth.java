@@ -13,7 +13,7 @@ public class HistoricalBalanceByMonth {
 	private BigDecimal saldoGastado;
 
 	@NotBlank
-	private Integer tipoMovimiento;
+	private Integer origenMovimiento;
 
 	public String getCategoria() {
 		return categoria;
@@ -22,10 +22,10 @@ public class HistoricalBalanceByMonth {
 	public HistoricalBalanceByMonth() {
 	}
 
-	public HistoricalBalanceByMonth(String categoria, BigDecimal saldoGastado, Integer tipoMovimiento) {
+	public HistoricalBalanceByMonth(String categoria, BigDecimal saldoGastado, Integer origenMovimiento) {
 		this.categoria = categoria;
 		this.saldoGastado = saldoGastado;
-		this.tipoMovimiento = tipoMovimiento;
+		this.origenMovimiento = origenMovimiento;
 	}
 
 	public void setCategoria(String categoria) {
@@ -40,12 +40,12 @@ public class HistoricalBalanceByMonth {
 		this.saldoGastado = saldoGastado;
 	}
 
-	public Integer getTipoMovimiento() {
-		return tipoMovimiento;
+	public Integer getOrigenMovimiento() {
+		return origenMovimiento;
 	}
 
-	public void setTipoMovimiento(Integer tipoMovimiento) {
-		this.tipoMovimiento = tipoMovimiento;
+	public void setOrigenMovimiento(Integer origenMovimiento) {
+		this.origenMovimiento = origenMovimiento;
 	}
 
 }
