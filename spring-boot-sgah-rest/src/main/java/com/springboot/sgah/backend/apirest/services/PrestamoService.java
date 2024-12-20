@@ -2,7 +2,9 @@ package com.springboot.sgah.backend.apirest.services;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
+import com.springboot.sgah.backend.apirest.models.entities.Estado;
 import com.springboot.sgah.backend.apirest.models.entities.Prestamo;
 
 public interface PrestamoService {
@@ -18,4 +20,6 @@ public interface PrestamoService {
 	BigDecimal calcularPrestamo();
 	
 	Prestamo obtenerPrestamo(String folio);
+
+	Optional<Estado> findEstadoById(Integer id);
 }

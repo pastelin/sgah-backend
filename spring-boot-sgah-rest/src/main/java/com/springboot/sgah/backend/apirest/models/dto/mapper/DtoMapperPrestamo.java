@@ -1,6 +1,7 @@
 package com.springboot.sgah.backend.apirest.models.dto.mapper;
 
 import com.springboot.sgah.backend.apirest.models.dto.PrestamoDto;
+import com.springboot.sgah.backend.apirest.models.entities.Estado;
 import com.springboot.sgah.backend.apirest.models.entities.Prestamo;
 
 public class DtoMapperPrestamo {
@@ -10,7 +11,7 @@ public class DtoMapperPrestamo {
 
 	private DtoMapperPrestamo() {
 	}
-
+ 
 	public static DtoMapperPrestamo builder() {
 		return new DtoMapperPrestamo();
 	}
@@ -31,10 +32,10 @@ public class DtoMapperPrestamo {
 		}
 
 		return new PrestamoDto(prestamo.getFolio(), prestamo.getMontoPrestado(), prestamo.getDescripcion(),
-				prestamo.getFechaCreacion(), prestamo.getMontoPagado(), prestamo.getCdEstatus());
+				prestamo.getFechaCreacion(), prestamo.getMontoPagado(), prestamo.getEstado().getCdEstado());
 	}
 
-	public Prestamo buildPrestamo() {
+	public Prestamo buildPrestamo(Estado estado) {
 		if (prestamoDto == null) {
 			throw new NullPointerException("Debe pasar el dto Prestamo!");
 		}
@@ -45,7 +46,7 @@ public class DtoMapperPrestamo {
 		prestamo.setDescripcion(prestamoDto.getDescripcion());
 		prestamo.setFechaCreacion(prestamoDto.getFechaCreacion());
 		prestamo.setMontoPagado(prestamoDto.getSaldoPagado());
-		prestamo.setCdEstatus(prestamoDto.getCdEstatus());
+		prestamo.setEstatus(estado);
 
 		return prestamo;
 	}

@@ -6,7 +6,10 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,8 +32,9 @@ public class Prestamo implements Serializable {
 	@Column(name = "monto_pagado")
 	private BigDecimal montoPagado;
 
-	@Column(name = "cd_estatus")
-	private Integer cdEstatus;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "cd_estado")
+	private Estado estado;
 
 	public String getFolio() {
 		return folio;
@@ -72,12 +76,12 @@ public class Prestamo implements Serializable {
 		this.montoPagado = montoPagado;
 	}
 
-	public Integer getCdEstatus() {
-		return cdEstatus;
+	public Estado getEstado() {
+		return estado;
 	}
 
-	public void setCdEstatus(Integer cdEstatus) {
-		this.cdEstatus = cdEstatus;
+	public void setEstatus(Estado estado) {
+		this.estado = estado;
 	}
 
 }

@@ -10,10 +10,10 @@ import com.springboot.sgah.backend.apirest.models.entities.Prestamo;
 
 public interface PrestamoDao extends CrudRepository<Prestamo, String> {
 
-	@Query(value="select SUM(monto_prestado - monto_pagado) from prestamos where cd_estatus = 1", nativeQuery=true)
+	@Query(value = "select SUM(monto_prestado - monto_pagado) from prestamos where cd_estado = 1", nativeQuery = true)
 	BigDecimal calcularPrestamo();
 
-	@Query(value = "select * from prestamos where cd_estatus = 1", nativeQuery=true)
+	@Query(value = "select p from Prestamo p left join fetch p.estado e where e.cdEstado = 1")
 	List<Prestamo> listarPrestamoActivo();
-	
+
 }

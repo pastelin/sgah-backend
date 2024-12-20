@@ -21,23 +21,23 @@ public class PrestamoDto {
 
 	private BigDecimal saldoPagado;
 
-	private Integer cdEstatus;
+	private Integer cdEstado;
 
 	public PrestamoDto() {
 		this.fechaCreacion = LocalDate.now();
-		this.cdEstatus = 1;
+		this.cdEstado = 1;
 		this.saldoPagado = new BigDecimal(0);
 		this.folio = Long.toString(System.currentTimeMillis());
 	}
 
 	public PrestamoDto(String folio, BigDecimal saldoPrestado, String descripcion, LocalDate fechaCreacion,
-			BigDecimal saldoPagado, Integer cdEstatus) {
+			BigDecimal saldoPagado, Integer cdEstado) {
 		this.folio = folio;
 		this.saldoPrestado = saldoPrestado;
 		this.descripcion = descripcion;
 		this.fechaCreacion = fechaCreacion;
 		this.saldoPagado = saldoPagado;
-		this.cdEstatus = cdEstatus;
+		this.cdEstado = cdEstado;
 	}
 
 	public String getFolio() {
@@ -80,12 +80,12 @@ public class PrestamoDto {
 		this.saldoPagado = saldoPagado;
 	}
 
-	public Integer getCdEstatus() {
-		return cdEstatus;
+	public Integer getCdEstado() {
+		return cdEstado;
 	}
 
-	public void setCdEstatus(Integer cdEstatus) {
-		this.cdEstatus = cdEstatus;
+	public void setCdEstado(Integer cdEstado) {
+		this.cdEstado = cdEstado;
 	}
 
 }
