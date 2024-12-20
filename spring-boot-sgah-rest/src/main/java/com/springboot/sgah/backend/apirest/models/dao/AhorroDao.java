@@ -10,7 +10,7 @@ import com.springboot.sgah.backend.apirest.models.entities.Ahorro;
 
 public interface AhorroDao extends CrudRepository<Ahorro, Long> {
 
-	@Query(value = "select SUM(monto) from ahorros where cd_estatus = 1", nativeQuery = true)
+	@Query(value = "select SUM(monto) from ahorros", nativeQuery = true)
 	BigDecimal calcularAhorro();
 
 	@Query(value = "select * from ahorros where month(fecha_creacion) = ?1 and year(fecha_creacion) = ?2", nativeQuery = true)

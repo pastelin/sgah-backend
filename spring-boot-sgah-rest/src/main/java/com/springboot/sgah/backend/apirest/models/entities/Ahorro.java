@@ -33,12 +33,8 @@ public class Ahorro implements Serializable {
 	@NotEmpty
 	private String descripcion;
 
-	@Column(name = "cd_estatus")
-	private Integer cdEstatus;
-
 	public Ahorro() {
 		this.fechaCreacion = LocalDate.now();
-		this.cdEstatus = 1;
 	}
 
 	public Long getId() {
@@ -72,13 +68,4 @@ public class Ahorro implements Serializable {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-
-	public Integer getCdEstatus() {
-		return cdEstatus;
-	}
-
-	public void setCdEstatus(Integer cdEstatus) {
-		this.cdEstatus = cdEstatus;
-	}
-
 }
