@@ -49,7 +49,7 @@ public class DtoMapperGasto {
 
 		}
 
-		return new GastoDto(gasto.getFechaCreacion(), gasto.getMonto(), gasto.getDescripcion(),
+		return new GastoDto(gasto.getId(), gasto.getFechaCreacion(), gasto.getMonto(), gasto.getDescripcion(),
 				gastoRecurrenteDto, origenMovimiento);
 	}
 
@@ -59,10 +59,12 @@ public class DtoMapperGasto {
 		}
 
 		gasto = new Gasto();
-		gasto.setMonto(gastoDto.getMonto());
+		gasto.setId(gastoDto.getId());
+		gasto.setMonto(gastoDto.getAmount());
 		gasto.setDescripcion(gastoDto.getDescripcion());
 		gasto.setGastoRecurrente(gastoRecurrente);
-		gasto.setCdTipoMovimiento(origenMovimiento);
+		gasto.setOrigenMovimiento(origenMovimiento);
+		gasto.setFechaCreacion(gastoDto.getCreationDate());
 
 		return gasto;
 	}

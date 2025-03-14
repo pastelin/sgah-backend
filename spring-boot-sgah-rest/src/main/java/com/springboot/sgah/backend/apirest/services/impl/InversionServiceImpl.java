@@ -2,6 +2,7 @@ package com.springboot.sgah.backend.apirest.services.impl;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,18 @@ import com.springboot.sgah.backend.apirest.services.InversionService;
 @Service
 public class InversionServiceImpl implements InversionService {
 
-	@Autowired
 	InversionDao inversionDao;
 
-	@Autowired
 	ProductoFinancieroDao catalogoDao;
+
+	public InversionServiceImpl() {
+	}
+
+	@Autowired
+	public InversionServiceImpl(InversionDao inversionDao, ProductoFinancieroDao catalogoDao) {
+		this.inversionDao = inversionDao;
+		this.catalogoDao = catalogoDao;
+	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -42,8 +50,7 @@ public class InversionServiceImpl implements InversionService {
 	@Override
 	public void saveInversion(Inversion inversion) {
 		inversionDao.saveInversion(inversion.getFolio(), inversion.getMonto(), inversion.getDescripcion(),
-				inversion.getFechaCreacion(),
-				inversion.getCdEstatus(), inversion.getCdAppInversion());
+				inversion.getFechaCreacion(), inversion.getAppInversion().getCdAppInversion());
 	}
 
 	@Override
@@ -60,8 +67,15 @@ public class InversionServiceImpl implements InversionService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Inversion obtenerInversion(String folio) {
 		return inversionDao.findById(folio).orElse(null);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<ProductoFinanciero> findProductoFinancieroById(Integer id) {
+		return catalogoDao.findById(id);
 	}
 
 }

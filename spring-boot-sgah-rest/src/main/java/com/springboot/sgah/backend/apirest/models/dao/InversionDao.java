@@ -12,7 +12,7 @@ import com.springboot.sgah.backend.apirest.models.entities.Inversion;
 
 public interface InversionDao extends CrudRepository<Inversion, String> {
 
-	@Query(value = "select SUM(monto) from inversiones where cd_estatus = 1", nativeQuery = true)
+	@Query(value = "select SUM(monto) from inversiones", nativeQuery = true)
 	BigDecimal calcularInversion();
 
 	@Query(value = "select monto from inversiones where folio = ?1", nativeQuery = true)
@@ -24,7 +24,7 @@ public interface InversionDao extends CrudRepository<Inversion, String> {
 	@Procedure(name = "spuInversion")
 	void saveInversion(@Param("folio") String folio, @Param("monto") BigDecimal monto,
 			@Param("descripcion") String descripcion,
-			@Param("fecha") LocalDate fecha, @Param("estatus") Integer estatus,
-			@Param("app_inversion") Integer appInversion);
+			@Param("fecha") LocalDate fecha,
+			@Param("app_inversion1") Integer appInversion);
 
 }

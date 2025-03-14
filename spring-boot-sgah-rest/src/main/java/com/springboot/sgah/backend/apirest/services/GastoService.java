@@ -32,4 +32,8 @@ public interface GastoService {
 
 	Optional<OrigenMovimiento> findOrigenMovimientoById(Integer id);
 
+	Optional<Gasto> editExpense(Long id, Gasto gasto);
+
+	Optional<Gasto> delete(Long id);
+
 }

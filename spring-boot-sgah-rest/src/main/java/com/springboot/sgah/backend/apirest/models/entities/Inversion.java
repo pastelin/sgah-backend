@@ -6,7 +6,10 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedStoredProcedureQuery;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.StoredProcedureParameter;
@@ -21,8 +24,7 @@ import jakarta.validation.constraints.NotNull;
 		@StoredProcedureParameter(mode = ParameterMode.IN, name = "monto", type = BigDecimal.class),
 		@StoredProcedureParameter(mode = ParameterMode.IN, name = "descripcion", type = String.class),
 		@StoredProcedureParameter(mode = ParameterMode.IN, name = "fecha", type = LocalDate.class),
-		@StoredProcedureParameter(mode = ParameterMode.IN, name = "estatus", type = Integer.class),
-		@StoredProcedureParameter(mode = ParameterMode.IN, name = "app_inversion", type = Integer.class) })
+		@StoredProcedureParameter(mode = ParameterMode.IN, name = "app_inversion1", type = Integer.class) })
 public class Inversion implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -40,16 +42,10 @@ public class Inversion implements Serializable {
 	@Column(name = "fecha_creacion")
 	private LocalDate fechaCreacion;
 
-	@Column(name = "cd_estatus")
-	private Integer cdEstatus;
-
 	@NotNull
-	@Column(name = "cd_app_inversion")
-	private Integer cdAppInversion;
-
-	public Inversion() {
-		this.cdEstatus = 1;
-	}
+	@JoinColumn(name = "cd_app_inversion")
+	@ManyToOne(fetch = FetchType.EAGER)
+	private ProductoFinanciero appInversion;
 
 	public String getFolio() {
 		return folio;
@@ -83,20 +79,12 @@ public class Inversion implements Serializable {
 		this.fechaCreacion = fechaCreacion;
 	}
 
-	public Integer getCdEstatus() {
-		return cdEstatus;
+	public ProductoFinanciero getAppInversion() {
+		return appInversion;
 	}
 
-	public void setCdEstatus(Integer cdEstatus) {
-		this.cdEstatus = cdEstatus;
-	}
-
-	public Integer getCdAppInversion() {
-		return cdAppInversion;
-	}
-
-	public void setCdAppInversion(Integer cdAppInversion) {
-		this.cdAppInversion = cdAppInversion;
+	public void setCdAppInversion(ProductoFinanciero appInversion) {
+		this.appInversion = appInversion;
 	}
 
 }

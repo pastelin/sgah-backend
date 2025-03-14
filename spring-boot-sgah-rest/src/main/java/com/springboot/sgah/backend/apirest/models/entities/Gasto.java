@@ -103,7 +103,7 @@ public class Gasto implements Serializable {
 		return origenMovimiento;
 	}
 
-	public void setCdTipoMovimiento(OrigenMovimiento origenMovimiento) {
+	public void setOrigenMovimiento(OrigenMovimiento origenMovimiento) {
 		this.origenMovimiento = origenMovimiento;
 	}
 

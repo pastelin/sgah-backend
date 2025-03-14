@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "catalogo_origen_movimiento")
-public class OrigenMovimiento implements Serializable{
+public class OrigenMovimiento implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -19,6 +19,14 @@ public class OrigenMovimiento implements Serializable{
 
 	@Column(name = "nb_origen_movimiento")
 	private String descripcion;
+
+	public OrigenMovimiento() {
+	}
+
+	public OrigenMovimiento(Integer id, String descripcion) {
+		this.id = id;
+		this.descripcion = descripcion;
+	}
 
 	public Integer getId() {
 		return id;

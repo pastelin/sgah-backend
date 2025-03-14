@@ -19,7 +19,7 @@ import com.springboot.sgah.backend.apirest.services.GastoService;
 import com.springboot.sgah.backend.apirest.services.InversionService;
 import com.springboot.sgah.backend.apirest.services.PrestamoService;
 
-@CrossOrigin(origins = { "http://localhost:5173/" })
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:5174/", "http://localhost:5175/" })
 @RestController
 @RequestMapping("/sgah/v0/resumen")
 public class ResumenRestController {

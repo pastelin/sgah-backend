@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +35,20 @@ import com.springboot.sgah.backend.apirest.services.InversionService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = { "http://localhost:5173/" })
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:5174/", "http://localhost:5175/" })
 @RestController
 @RequestMapping("/sgah/v0/inversion")
 public class InversionRestController {
 
-	@Autowired
 	InversionService inversionService;
+
+	public InversionRestController() {
+	}
+
+	@Autowired
+	public InversionRestController(InversionService inversionService) {
+		this.inversionService = inversionService;
+	}
 
 	@GetMapping("/")
 	public ResponseEntity<Map<String, Object>> findInversiones() {
@@ -54,10 +61,11 @@ public class InversionRestController {
 
 			for (Inversion inversion : inversiones) {
 				inversionesDto.add(DtoMapperInversion.builder().setInversion(inversion)
-						.buildInversionDto(inversionService.findAllProductosFinancieros()));
+						.buildInversionDto());
 			}
 
 		} catch (DataAccessException e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -91,7 +99,6 @@ public class InversionRestController {
 	@PostMapping("/increment")
 	public ResponseEntity<Map<String, Object>> agregarInversion(@Valid @RequestBody InversionDto inversion,
 			BindingResult result) {
-
 		Map<String, Object> response = new HashMap<>();
 
 		if (result.hasErrors()) {
@@ -99,15 +106,25 @@ public class InversionRestController {
 		}
 
 		try {
-			inversionService.saveInversion(DtoMapperInversion.builder().setInversionDto(inversion).buildInversion());
-		} catch (DataException e) {
+			Optional<ProductoFinanciero> productoFinanciero = inversionService
+					.findProductoFinancieroById(inversion.getProductoFinanciero().getCdApp());
+
+			if (!productoFinanciero.isPresent()) {
+				response.put(TEXT_MENSAJE, "No se encontró el producto financiero!");
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			}
+
+			inversionService.saveInversion(
+					DtoMapperInversion.builder().setInversionDto(inversion).buildInversion(productoFinanciero.get()));
+
+			response.put(TEXT_MENSAJE, "El incremento de $" + inversion.getMonto() + " fue éxito!");
+			response.put("fecha", inversion.getFechaCreacion());
+			response.put("folio", inversion.getFolio());
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		response.put(TEXT_MENSAJE, "El incremento de $" + inversion.getMonto() + " fue éxito!");
-		response.put("fecha", inversion.getFechaCreacion());
-		response.put("folio", inversion.getFolio());
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
 	@PostMapping("/retiro")
@@ -138,7 +155,17 @@ public class InversionRestController {
 			}
 
 			inversion.setMonto(saldoDisponible.subtract(saldoRetirado));
-			inversionService.updateInversion(DtoMapperInversion.builder().setInversionDto(inversion).buildInversion());
+
+			Optional<ProductoFinanciero> productoFinanciero = inversionService
+					.findProductoFinancieroById(inversion.getProductoFinanciero().getCdApp());
+
+			if (!productoFinanciero.isPresent()) {
+				response.put(TEXT_MENSAJE, "No se encontró el producto financiero!");
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			}
+
+			inversionService.updateInversion(
+					DtoMapperInversion.builder().setInversionDto(inversion).buildInversion(productoFinanciero.get()));
 		} catch (DataException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -174,7 +201,7 @@ public class InversionRestController {
 		try {
 			Inversion inversion = inversionService.obtenerInversion(folio);
 			inversionDto = DtoMapperInversion.builder().setInversion(inversion)
-					.buildInversionDto(inversionService.findAllProductosFinancieros());
+					.buildInversionDto();
 		} catch (DataAccessException ex) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(ex), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

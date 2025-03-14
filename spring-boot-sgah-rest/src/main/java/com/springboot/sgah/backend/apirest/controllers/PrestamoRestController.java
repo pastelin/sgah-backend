@@ -39,7 +39,7 @@ import com.springboot.sgah.backend.apirest.services.PrestamoService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = { "http://localhost:5173/" })
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:5174/", "http://localhost:5175/" })
 @RestController
 @RequestMapping("/sgah/v0/prestamo")
 public class PrestamoRestController {

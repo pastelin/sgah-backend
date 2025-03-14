@@ -147,4 +147,31 @@ public class GastoServiceImpl implements GastoService {
 		return origenMovimientoDao.findById(id);
 	}
 
+	@Override
+	public Optional<Gasto> editExpense(Long id, Gasto gasto) {
+		Optional<Gasto> gastoOptional = gastoDao.findById(id);
+
+		if (gastoOptional.isPresent()) {
+			Gasto gastoDb = gastoOptional.get();
+			gastoDb.setDescripcion(gasto.getDescripcion());
+			gastoDb.setFechaCreacion(gasto.getFechaCreacion());
+			gastoDb.setMonto(gasto.getMonto());
+			gastoDb.setGastoRecurrente(gasto.getGastoRecurrente());
+			gastoDb.setOrigenMovimiento(gasto.getOrigenMovimiento());
+			return Optional.of(gastoDao.save(gastoDb));
+		}
+
+		return gastoOptional;
+	}
+
+	@Override
+	public Optional<Gasto> delete(Long id) {
+		Optional<Gasto> gastoOptional = gastoDao.findById(id);
+
+		gastoOptional.ifPresent(p -> gastoDao.delete(p));
+			
+
+		return gastoOptional;
+	}
+
 }

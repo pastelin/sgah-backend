@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +37,9 @@ import com.springboot.sgah.backend.apirest.rm.LocalDateUtil;
 import com.springboot.sgah.backend.apirest.services.GastoService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PutMapping;
 
-@CrossOrigin(origins = { "http://localhost:5173/" })
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:5174/", "http://localhost:5175/" })
 @RestController
 @RequestMapping("/sgah/v0/gasto")
 public class GastoRestController {
@@ -137,7 +139,7 @@ public class GastoRestController {
 
 			BigDecimal saldoDisponible = gastoService.calcularMontoDisponible();
 
-			if (gasto.getOrigenMovimiento().getId() == 2 && gasto.getMonto().compareTo(saldoDisponible) >= 1) {
+			if (gasto.getOrigenMovimiento().getId() == 2 && gasto.getAmount().compareTo(saldoDisponible) >= 1) {
 				response.put(TEXT_MENSAJE, "El monto ingresado no debe ser mayor a $ " + saldoDisponible);
 				return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
 			}
@@ -170,5 +172,53 @@ public class GastoRestController {
 		} catch (DataAccessException e) {
 			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Map<String, Object>> update(@PathVariable Long id, @Valid @RequestBody GastoDto gasto,
+			BindingResult result) {
+		Map<String, Object> response = new HashMap<>();
+
+		if (result.hasErrors()) {
+			return new ResponseEntity<>(ErrorMessageUtil.getFieldsErrorMessage(result), HttpStatus.BAD_REQUEST);
+		}
+
+		try {
+
+			GastoRecurrente gastoRecurrente = new GastoRecurrente(gasto.getGastoRecurrente().getCdGasto(),
+					gasto.getGastoRecurrente().getNbGasto());
+
+			OrigenMovimiento origenMovimiento = new OrigenMovimiento(gasto.getOrigenMovimiento().getId(),
+					gasto.getOrigenMovimiento().getDescripcion());
+
+			Gasto gastoEntity = DtoMapperGasto.builder().setGastoDto(gasto).buiGasto(
+					gastoRecurrente, origenMovimiento);
+
+			Optional<Gasto> gastoOptional = gastoService.editExpense(id, gastoEntity);
+
+			if (gastoOptional.isPresent()) {
+				response.put(TEXT_MENSAJE, "¡Gasto modificado exitosamente!");
+				response.put("expense", DtoMapperGasto.builder().setGasto(gastoEntity).buildGastoDto());
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			}
+
+			response.put(TEXT_MENSAJE, "No se encontró el gasto");
+			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
+		} catch (DataAccessException e) {
+			return new ResponseEntity<>(ErrorMessageUtil.getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<GastoDto> delete(@PathVariable Long id) {
+
+		Optional<Gasto> gastoOptional = gastoService.delete(id);
+
+		if (gastoOptional.isPresent()) {
+			return ResponseEntity.ok(DtoMapperGasto.builder().setGasto(gastoOptional.get()).buildGastoDto());
+		}
+
+		return ResponseEntity.notFound().build();
 	}
 }

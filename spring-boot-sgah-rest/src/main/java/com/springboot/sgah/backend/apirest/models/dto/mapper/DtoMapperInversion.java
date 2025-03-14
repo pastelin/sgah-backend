@@ -1,7 +1,5 @@
 package com.springboot.sgah.backend.apirest.models.dto.mapper;
 
-import java.util.List;
-
 import com.springboot.sgah.backend.apirest.models.dto.InversionDto;
 import com.springboot.sgah.backend.apirest.models.dto.ProductoFinancieroDto;
 import com.springboot.sgah.backend.apirest.models.entities.Inversion;
@@ -29,34 +27,17 @@ public class DtoMapperInversion {
 		return this;
 	}
 
-	private ProductoFinancieroDto buildProductoFinancieroDto(List<ProductoFinanciero> productosFinancieros,
-			Integer id) {
-		ProductoFinancieroDto productoFinancieroDto = null;
-
-		for (ProductoFinanciero productoFinanciero : productosFinancieros) {
-			if (productoFinanciero.getCdAppInversion().equals(id)) {
-				productoFinancieroDto = DtoMapperProductoFinanciero.builder().setProductoFinanciero(productoFinanciero)
-						.buildProductoFinancieroDto();
-				break;
-			}
-		}
-
-		return productoFinancieroDto;
-	}
-
-	public InversionDto buildInversionDto(List<ProductoFinanciero> productosFinancieros) {
+	public InversionDto buildInversionDto() {
 		if (inversion == null) {
 			throw new NullPointerException("Debe pasar el entity Inversion!");
 		}
 
-		ProductoFinancieroDto productoFinancieroDto = buildProductoFinancieroDto(productosFinancieros,
-				inversion.getCdAppInversion());
-
 		return new InversionDto(inversion.getFolio(), inversion.getMonto(), inversion.getDescripcion(),
-				inversion.getFechaCreacion(), productoFinancieroDto);
+				inversion.getFechaCreacion(), new ProductoFinancieroDto(inversion.getAppInversion().getCdAppInversion(),
+						inversion.getAppInversion().getNbAppInversion()));
 	}
 
-	public Inversion buildInversion() {
+	public Inversion buildInversion(ProductoFinanciero productoFinanciero) {
 		if (inversionDto == null) {
 			throw new NullPointerException("Debe pasar el dto Inversion!");
 		}
@@ -66,7 +47,7 @@ public class DtoMapperInversion {
 		inversion.setFechaCreacion(inversionDto.getFechaCreacion());
 		inversion.setDescripcion(inversionDto.getDescripcion());
 		inversion.setMonto(inversionDto.getMonto());
-		inversion.setCdAppInversion(inversionDto.getProductoFinanciero().getCdApp());
+		inversion.setCdAppInversion(productoFinanciero);
 
 		return inversion;
 	}

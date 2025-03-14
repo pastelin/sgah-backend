@@ -7,10 +7,13 @@ import jakarta.validation.constraints.NotNull;
 
 public class GastoDto {
 
-	private LocalDate fechaCreacion;
+
+	private Long id;
+	
+	private LocalDate creationDate;
 
 	@NotNull
-	private BigDecimal monto;
+	private BigDecimal amount;
 
 	@NotNull
 	private String descripcion;
@@ -24,21 +27,30 @@ public class GastoDto {
 	public GastoDto() {
 	}
 
-	public GastoDto(LocalDate fechaCreacion, BigDecimal monto, String descripcion,
+	public GastoDto(Long id, LocalDate creationDate, BigDecimal amount, String descripcion,
 			GastoRecurrenteDto gastoRecurrenteDto, OrigenMovimientoDto origenMovimiento) {
-		this.fechaCreacion = fechaCreacion;
-		this.monto = monto;
+		this.id = id;
+		this.creationDate = creationDate;
+		this.amount = amount;
 		this.descripcion = descripcion;
 		this.gastoRecurrente = gastoRecurrenteDto;
 		this.origenMovimiento = origenMovimiento;
 	}
 
-	public LocalDate getFechaCreacion() {
-		return fechaCreacion;
+	public Long getId() {
+		return id;
 	}
 
-	public void setFechaCreacion(LocalDate fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public LocalDate getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(LocalDate creationDate) {
+		this.creationDate = creationDate;
 	}
 
 	public String getDescripcion() {
@@ -65,11 +77,11 @@ public class GastoDto {
 		this.origenMovimiento = origenMovimiento;
 	}
 
-	public BigDecimal getMonto() {
-		return monto;
+	public BigDecimal getAmount() {
+		return amount;
 	}
 
-	public void setMonto(BigDecimal monto) {
-		this.monto = monto;
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
 	}
 }
