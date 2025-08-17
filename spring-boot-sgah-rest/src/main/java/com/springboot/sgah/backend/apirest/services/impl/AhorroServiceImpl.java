@@ -38,7 +38,7 @@ public class AhorroServiceImpl implements AhorroService {
 		BigDecimal inversion = inversionDao.calcularInversion();
 		BigDecimal prestamo = prestamoDao.calcularPrestamo();
 
-		return ahorro.subtract(inversion).subtract(prestamo);
+		return prestamo != null ? ahorro.subtract(inversion).subtract(prestamo) : ahorro.subtract(inversion);
 	}
 
 	@Override

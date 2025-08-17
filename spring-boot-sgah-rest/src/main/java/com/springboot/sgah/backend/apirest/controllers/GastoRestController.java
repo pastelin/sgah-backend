@@ -148,7 +148,7 @@ public class GastoRestController {
 					origenMovimiento.get());
 			gastoService.saveGasto(gastoEntity);
 
-			response.put(TEXT_MENSAJE, "Gasto guardado con éxito!");
+			response.put(TEXT_MENSAJE, "¡Gasto registrado con éxito!");
 			response.put("gasto", DtoMapperGasto.builder().setGasto(gastoEntity).buildGastoDto());
 			return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -197,7 +197,7 @@ public class GastoRestController {
 			Optional<Gasto> gastoOptional = gastoService.editExpense(id, gastoEntity);
 
 			if (gastoOptional.isPresent()) {
-				response.put(TEXT_MENSAJE, "¡Gasto modificado exitosamente!");
+				response.put(TEXT_MENSAJE, "¡Gasto modificado correctamente!");
 				response.put("expense", DtoMapperGasto.builder().setGasto(gastoEntity).buildGastoDto());
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
